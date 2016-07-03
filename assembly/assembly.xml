@@ -17,6 +17,7 @@
     <fileSet>
       <directory>${binfolder}/unix</directory>
       <outputDirectory>bin</outputDirectory>
+      <filtered>true</filtered> <!-- Causes maven placeholders to be replaced in the files -->
       <includes>
         <include>**/*</include>
       </includes>
@@ -27,6 +28,7 @@
     <fileSet>
       <directory>${binfolder}/win</directory>
       <outputDirectory>bin</outputDirectory>
+      <filtered>true</filtered> <!-- Causes maven placeholders to be replaced in the files -->
       <includes>
         <include>**/*</include>
       </includes>
@@ -45,7 +47,7 @@
 
 
     <fileSet>
-      <directory>${butterfly.target}</directory>
+      <directory>${program.target}</directory>
       <outputDirectory>lib</outputDirectory>
       <includes>
         <include>*.jar</include>
@@ -59,5 +61,6 @@
         <include>**/*</include>
       </includes>
     </fileSet>
+
   </fileSets>
 </assembly>

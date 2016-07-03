@@ -1,3 +1,3 @@
 @echo off
-SET BUTTERFLY_HOME=..
-java -jar -Djava.library.path=./%BUTTERFLY_HOME%/sl-libs/ -Xmx2048M ./%BUTTERFLY_HOME%/lib/butterfly.jar
+SET ${name.uppercase}_HOME=..
+java -jar -Djava.library.path=./%${name.uppercase}_HOME%/sl-libs/ -Xmx2048M ./%${name.uppercase}_HOME%/lib/${artifactId}.jar

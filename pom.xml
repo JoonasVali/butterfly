@@ -4,21 +4,22 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>ee.joonavali</groupId>
+  <groupId>ee.joonavali.butterfly</groupId>
   <artifactId>butterfly</artifactId>
   <version>1.0-SNAPSHOT</version>
 
   <properties>
     <name>Butterfly</name>
-    <artifact.name>butterfly</artifact.name>
+    <name.uppercase>Butterfly</name.uppercase>
+    <boot.class>ee.joonasvali.butterfly.Boot</boot.class>
     <author>Joonas Vali</author>
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
     <binfolder>${basedir}/bin</binfolder>
     <asm.file>${basedir}/assembly/assembly.xml</asm.file>
     <slick.native.lib>${basedir}/target/natives</slick.native.lib>
-    <butterfly.target>${basedir}/target</butterfly.target>
-    <project.build.directory>${basedir}/dist</project.build.directory>
+    <program.target>${basedir}/target</program.target>
+    <project.dist>${program.target}/dist</project.dist>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
@@ -53,7 +54,7 @@
             <descriptor>${asm.file}</descriptor>
           </descriptors>
 
-          <finalName>${artifact.name}</finalName>
+          <finalName>${artifactId}</finalName>
           <appendAssemblyId>false</appendAssemblyId>
         </configuration>
 
@@ -70,6 +71,7 @@
         </executions>
       </plugin>
 
+      <!-- Configuration for compiling files. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -80,6 +82,7 @@
         </configuration>
       </plugin>
 
+      <!-- Adds native files to the application, like Slick2D native files-->
       <plugin>
         <groupId>com.googlecode.mavennatives</groupId>
         <artifactId>maven-nativedependencies-plugin</artifactId>
@@ -95,6 +98,7 @@
         </executions>
       </plugin>
 
+      <!-- Produces app JAR from the classes. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
@@ -103,14 +107,38 @@
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>ee.joonasvali.Boot</mainClass>
+              <mainClass>${boot.class}</mainClass>
             </manifest>
             <manifestEntries>
-              <Class-Path>${artifact.name}.jar</Class-Path>
+              <Class-Path>${artifactId}.jar</Class-Path>
             </manifestEntries>
           </archive>
         </configuration>
       </plugin>
+
+      <!-- Copy everything from target/${project.name}/${project.name} to $[project.dist} for easier access. -->
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>install</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.dist}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${program.target}/${artifactId}/${artifactId}</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+
     </plugins>
   </build>
 </project>
