@@ -5,6 +5,7 @@ import ee.joonasvali.butterfly.simulation.actor.Actor;
 import ee.joonasvali.butterfly.simulation.actor.WorldView;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Optional;
 
 /**
@@ -19,12 +20,41 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
   public SimulationState run(SimulationState original) {
     ArrayList<Actor> actors = original.getActors();
     ArrayList<Actor> newActors = modifyActors(actors, original.getWidth(), original.getHeight());
-    ArrayList<Food> newFood = modifyFood(original.getFood(), original.getWidth(), original.getHeight());
+    ArrayList<Food> newFood = modifyFood(original.getFood(), newActors, original.getWidth(), original.getHeight());
     return new SimulationState(newActors, newFood, original.getWidth(), original.getHeight());
   }
 
-  private ArrayList<Food> modifyFood(ArrayList<Food> food, int width, int height) {
-    return food; // TODO
+  // Collect food
+  private ArrayList<Food> modifyFood(ArrayList<Food> food, ArrayList<Actor> actors, int width, int height) {
+    ArrayList<Food> result = new ArrayList<>(food);
+    ArrayList<Food> removed = new ArrayList<>();
+    for (Actor actor : actors) {
+      int x = actor.getX();
+      int y = actor.getY();
+      int diameter = actor.getDiameter();
+      for (Food f : food) {
+        if (isInRadius(f, x, y, diameter)) {
+          // TODO add food to actor
+          removed.add(f);
+        }
+      }
+    }
+    result.removeAll(removed);
+    return result; // TODO
+  }
+
+  private boolean isInRadius(Food f, int x, int y, int diameter) {
+    double midX = x + (double)diameter / 2;
+    double midY = y + (double)diameter / 2;
+
+    int fDiameter = f.getDiameter();
+    double fXmid = f.getX() + (double)fDiameter / 2;
+    double fYmid = f.getY() + (double)fDiameter / 2;
+    double dist = Math.sqrt(Math.pow(midX - fXmid, 2) + Math.pow(midY - fYmid, 2));
+    return dist < diameter / 2 + fDiameter / 2;
+
+
+
   }
 
   private ArrayList<Actor> modifyActors(ArrayList<Actor> actors, int width, int height) {

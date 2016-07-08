@@ -51,7 +51,7 @@ public class ButterFly extends BasicGame {
     container = new SimulationContainer(
         runner,
         createInitialState(simWidth, simHeight),
-        new SimulationPainterImpl(simWidth, simHeight, config.getActorDiameter()),
+        new SimulationPainterImpl(simWidth, simHeight, config.getActorDiameter(), config.getFoodDiameter()),
         simWidth,
         simHeight
     );
@@ -74,7 +74,7 @@ public class ButterFly extends BasicGame {
     return new Food(
         (int)(Math.random() * simWidth),
         (int)(Math.random() * simHeight),
-        4 /* TODO */,
+        config.getFoodDiameter(),
         Math.random() * 360,
         0,
         0,
@@ -135,7 +135,7 @@ public class ButterFly extends BasicGame {
         0,
         0,
         (int)(Math.random() * 90 + 10),
-        Math.random() * 10
+        Math.random() * 5
     );
   }
 }

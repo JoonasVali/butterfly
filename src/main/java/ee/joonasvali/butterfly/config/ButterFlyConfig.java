@@ -11,6 +11,8 @@ public class ButterFlyConfig {
   private boolean fullscreen;
   @Value("${actor.diameter}")
   private int actorDiameter;
+  @Value("${food.diameter}")
+  private int foodDiameter;
 
   public int getWindowResolutionWidth() {
     return windowResolutionWidth;
@@ -26,5 +28,9 @@ public class ButterFlyConfig {
 
   public int getActorDiameter() {
     return actorDiameter;
+  }
+
+  public int getFoodDiameter() {
+    return foodDiameter;
   }
 }

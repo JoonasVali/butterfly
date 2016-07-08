@@ -21,15 +21,17 @@ public class SimulationPainterImpl implements SimulationPainter {
   private final int width;
   private final int height;
   private final int actorDiameter;
+  private final int foodDiameter;
   private final Image image;
   private final Image actor;
   private final Image food;
   private final Graphics g;
 
-  public SimulationPainterImpl(int width, int height, int actorDiameter) throws SlickException {
+  public SimulationPainterImpl(int width, int height, int actorDiameter, int foodDiameter) throws SlickException {
     this.width = width;
     this.height = height;
     this.actorDiameter = actorDiameter;
+    this.foodDiameter = foodDiameter;
     this.image = new Image(width, height);
     this.actor = createActor();
     this.food = createFood();
@@ -40,12 +42,12 @@ public class SimulationPainterImpl implements SimulationPainter {
   }
 
   private Image createFood() throws SlickException {
-    Image image = new Image(4, 4);
+    Image image = new Image(foodDiameter, foodDiameter);
     Graphics g = image.getGraphics();
     g.setLineWidth(2);
     g.setColor(Color.green);
-    g.drawOval(0, 0, 4, 4);
-    g.drawLine(2, 2, 2, 0);
+    g.drawOval(0, 0, foodDiameter, foodDiameter);
+    g.drawLine(foodDiameter / 2, foodDiameter / 2, foodDiameter / 2, 0);
     g.flush();
     return image;
   }
@@ -55,7 +57,7 @@ public class SimulationPainterImpl implements SimulationPainter {
     Graphics g = image.getGraphics();
     g.setLineWidth(5);
     g.setColor(Color.orange);
-    g.drawOval(5, 5, actorDiameter - 5, actorDiameter - 5);
+    g.drawOval(0, 0, actorDiameter, actorDiameter);
     g.drawLine(actorDiameter / 2, actorDiameter / 2, actorDiameter / 2, 0);
     g.flush();
     return image;
