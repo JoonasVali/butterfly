@@ -23,7 +23,9 @@ public class SimulationPainterImpl implements SimulationPainter {
   private final int actorDiameter;
   private final int foodDiameter;
   private final Image image;
-  private final Image actor;
+  private final Image actorOk;
+  private final Image actorMedium;
+  private final Image actorBad;
   private final Image food;
   private final Graphics g;
 
@@ -33,7 +35,9 @@ public class SimulationPainterImpl implements SimulationPainter {
     this.actorDiameter = actorDiameter;
     this.foodDiameter = foodDiameter;
     this.image = new Image(width, height);
-    this.actor = createActor();
+    this.actorOk = createActor(Color.cyan);
+    this.actorMedium = createActor(Color.orange);
+    this.actorBad = createActor(Color.red);
     this.food = createFood();
 
     this.image.setFilter(Image.FILTER_LINEAR);
@@ -52,11 +56,11 @@ public class SimulationPainterImpl implements SimulationPainter {
     return image;
   }
 
-  private Image createActor() throws SlickException {
+  private Image createActor(Color color) throws SlickException {
     Image image = new Image(actorDiameter, actorDiameter);
     Graphics g = image.getGraphics();
     g.setLineWidth(5);
-    g.setColor(Color.orange);
+    g.setColor(color);
     g.drawOval(0, 0, actorDiameter, actorDiameter);
     g.drawLine(actorDiameter / 2, actorDiameter / 2, actorDiameter / 2, 0);
     g.flush();
@@ -83,8 +87,16 @@ public class SimulationPainterImpl implements SimulationPainter {
 
   private void drawActors(Graphics g, ArrayList<Actor> actors) {
     for (Actor actor : actors) {
-      this.actor.setRotation((float)actor.getRotation() + 90);
-      g.drawImage(this.actor, actor.getX(), actor.getY());
+      if (actor.getHealth() > 800) {
+        this.actorOk.setRotation((float) actor.getRotation() + 90);
+        g.drawImage(this.actorOk, actor.getX(), actor.getY());
+      } else if (actor.getHealth() > 400) {
+        this.actorMedium.setRotation((float) actor.getRotation() + 90);
+        g.drawImage(this.actorMedium, actor.getX(), actor.getY());
+      } else {
+        this.actorBad.setRotation((float) actor.getRotation() + 90);
+        g.drawImage(this.actorBad, actor.getX(), actor.getY());
+      }
     }
   }
 }

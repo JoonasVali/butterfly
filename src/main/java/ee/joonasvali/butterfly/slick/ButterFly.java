@@ -24,6 +24,8 @@ import java.util.ArrayList;
 public class ButterFly extends BasicGame {
   public static final int SIMULATION_SIZE_MULTIPLIER = 2;
   public static final int CLOCK = 50;
+  public static final int ACTORS_IN_SIMULATION = 10;
+  public static final int INITIAL_HEALTH = 1000;
 
   private final UI ui;
   private final ButterFlyConfig config;
@@ -119,13 +121,13 @@ public class ButterFly extends BasicGame {
 
   public ArrayList<Actor> getActors(int simWidth, int simHeight) {
     ArrayList<Actor> actors = new ArrayList<>();
-    actors.add(randomActor(simWidth - config.getActorDiameter(), simHeight - config.getActorDiameter()));
-    actors.add(randomActor(simWidth - config.getActorDiameter(), simHeight - config.getActorDiameter()));
-    actors.add(randomActor(simWidth - config.getActorDiameter(), simHeight - config.getActorDiameter()));
+    for (int i = 0; i < ACTORS_IN_SIMULATION; i++) {
+      actors.add(createRandomActor(simWidth - config.getActorDiameter(), simHeight - config.getActorDiameter()));
+    }
     return actors;
   }
 
-  private Actor randomActor(int simWidth, int simHeight) {
+  private Actor createRandomActor(int simWidth, int simHeight) {
     return new Actor(
         (int)(Math.random() * simWidth),
         (int)(Math.random() * simHeight),
@@ -134,7 +136,7 @@ public class ButterFly extends BasicGame {
         0,
         0,
         0,
-        (int)(Math.random() * 90 + 10),
+        INITIAL_HEALTH,
         Math.random() * 5
     );
   }

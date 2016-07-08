@@ -5,7 +5,7 @@ import ee.joonasvali.butterfly.simulation.actor.Actor;
 import ee.joonasvali.butterfly.simulation.actor.WorldView;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.Optional;
 
 /**
@@ -14,7 +14,10 @@ import java.util.Optional;
 public class PhysicsRunnerImpl implements PhysicsRunner {
   public static final int MAX_ROTATION_IMPULSE = 5;
   public static final double IMPULSE_DECAY = 1.1;
+  public static final int HEALTH_DECAY = 1;
 
+
+  private HashMap<Actor, Double> healthToAdd = new HashMap<>();
 
   @Override
   public SimulationState run(SimulationState original) {
@@ -34,7 +37,12 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
       int diameter = actor.getDiameter();
       for (Food f : food) {
         if (isInRadius(f, x, y, diameter)) {
-          // TODO add food to actor
+          Double health = healthToAdd.get(actor);
+          if (health == null) {
+            healthToAdd.put(actor, f.getPoints());
+          } else {
+            healthToAdd.put(actor, f.getPoints() + health);
+          }
           removed.add(f);
         }
       }
@@ -62,12 +70,13 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
     for (Actor actor : actors) {
       act(actor, width, height).ifPresent(newActors::add);
     }
+    healthToAdd.clear();
     return newActors;
   }
 
   private Optional<Actor> act(Actor actor, int width, int height) {
     double rotation = actor.getRotation();
-    int health = actor.getHealth();
+    int health = actor.getHealth() - HEALTH_DECAY;
     int x = actor.getX();
     int y = actor.getY();
     int diameter = actor.getDiameter();
@@ -75,6 +84,11 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
     double xImpulse = actor.getXImpulse();
     double yImpulse = actor.getYImpulse();
     double speed = actor.getSpeed();
+
+    Double healthToAdd = this.healthToAdd.get(actor);
+    if (healthToAdd != null) {
+      health += healthToAdd;
+    }
 
     Action action = actor.move(new WorldView(/* TODO */));
 
@@ -105,6 +119,10 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
     xImpulse = (x - actor.getX()) / IMPULSE_DECAY;
     yImpulse = (y - actor.getY()) / IMPULSE_DECAY;
 
-    return Optional.of(new Actor(x, y, diameter, rotation, xImpulse, yImpulse, rotationImpulse, health, speed));
+    if (health > 0) {
+      return Optional.of(new Actor(x, y, diameter, rotation, xImpulse, yImpulse, rotationImpulse, health, speed));
+    } else {
+      return Optional.empty();
+    }
   }
 }
