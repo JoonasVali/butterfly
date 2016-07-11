@@ -19,10 +19,6 @@ public class Actor extends Physical {
     return health;
   }
 
-  public Actor copy() {
-    return new Actor(getX(), getY(), getDiameter(), getRotation(), getXImpulse(), getYImpulse(), getRotationImpulse(), getHealth(), getSpeed());
-  }
-
   public double getSpeed() {
     return speed;
   }

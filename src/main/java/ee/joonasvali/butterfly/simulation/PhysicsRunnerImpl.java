@@ -3,9 +3,11 @@ package ee.joonasvali.butterfly.simulation;
 import ee.joonasvali.butterfly.simulation.actor.Action;
 import ee.joonasvali.butterfly.simulation.actor.Actor;
 import ee.joonasvali.butterfly.simulation.actor.WorldView;
+import ee.joonasvali.butterfly.simulation.actor.demo.PlayerActor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Optional;
 
 /**
@@ -28,14 +30,37 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
   }
 
   // Collect food
+  // This might share references from the 'past' foods, because they immutable, it should be ok.
   private ArrayList<Food> modifyFood(ArrayList<Food> food, ArrayList<Actor> actors, int width, int height) {
     ArrayList<Food> result = new ArrayList<>(food);
-    ArrayList<Food> removed = new ArrayList<>();
+    ArrayList<Food> added = new ArrayList<>(food.size());
     for (Actor actor : actors) {
       int x = actor.getX();
       int y = actor.getY();
       int diameter = actor.getDiameter();
-      for (Food f : food) {
+      if (!added.isEmpty()) {
+        result.addAll(added);
+        added.clear();
+      }
+      Iterator<Food> it = result.iterator();
+      while(it.hasNext()) {
+        Food f = it.next();
+        double fx = f.getX();
+        double fy = f.getY();
+        double frot = f.getRotation();
+        int fdiam = f.getDiameter();
+        double points = f.getPoints();
+        double fXImp = f.getXImpulse();
+        double fYImp = f.getYImpulse();
+
+        double fRotImpulse = f.getRotationImpulse();
+
+        double midX = x + diameter / 2;
+        double midY = y + diameter / 2;
+
+        double fmidX = f.getX() + (double)fdiam / 2;
+        double fmidY = f.getY() + (double)fdiam / 2;
+
         if (isInRadius(f, x, y, diameter)) {
           Double health = healthToAdd.get(actor);
           if (health == null) {
@@ -43,23 +68,66 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
           } else {
             healthToAdd.put(actor, f.getPoints() + health);
           }
-          removed.add(f);
+          it.remove();
+          continue;
+        } else if (isInRadius(f, x, y, diameter + 50)) {
+          // If food close to actor, but not in radius.
+          fXImp += (fmidX - midX) / 20;
+          fYImp += (fmidY - midY) / 20;
         }
+
+        Food newFood = new Food((int)fx, (int)fy, fdiam, frot, fXImp, fYImp, fRotImpulse, points);
+        it.remove();
+        added.add(newFood);
       }
     }
-    result.removeAll(removed);
-    return result; // TODO
+
+    result.addAll(added);
+    added.clear();
+
+    // Make the actual movement
+    for (Food f: result) {
+      double fx = f.getX();
+      double fy = f.getY();
+      double frot = f.getRotation();
+      int fdiam = f.getDiameter();
+      double points = f.getPoints();
+      double fXImp = f.getXImpulse();
+      double fYImp = f.getYImpulse();
+
+      double fRotImpulse = f.getRotationImpulse();
+
+      fx += fXImp;
+      fy += fYImp;
+
+          /*
+            Limit world boundaries
+          */
+      fx = Math.min(Math.max(0, fx), width - f.getDiameter());
+      fy = Math.min(Math.max(0, fy), height - f.getDiameter());
+
+      fXImp = (fx - f.getX()) / IMPULSE_DECAY;
+      fYImp = (fy - f.getY()) / IMPULSE_DECAY;
+
+      Food newFood = new Food((int)fx, (int)fy, fdiam, frot, fXImp, fYImp, fRotImpulse, points);
+      added.add(newFood);
+    }
+
+    result.clear();
+    result.addAll(added);
+    return result;
   }
 
   private boolean isInRadius(Food f, int x, int y, int diameter) {
-    double midX = x + (double)diameter / 2;
-    double midY = y + (double)diameter / 2;
+    double radius = diameter / 2;
+    double midX = x + radius;
+    double midY = y + radius;
 
-    int fDiameter = f.getDiameter();
-    double fXmid = f.getX() + (double)fDiameter / 2;
-    double fYmid = f.getY() + (double)fDiameter / 2;
+    int fRadius = f.getDiameter() / 2;
+    double fXmid = f.getX() + (double)fRadius;
+    double fYmid = f.getY() + (double)fRadius;
     double dist = Math.sqrt(Math.pow(midX - fXmid, 2) + Math.pow(midY - fYmid, 2));
-    return dist < diameter / 2 + fDiameter / 2;
+    return dist < radius + fRadius;
 
 
 
@@ -120,7 +188,11 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
     yImpulse = (y - actor.getY()) / IMPULSE_DECAY;
 
     if (health > 0) {
-      return Optional.of(new Actor(x, y, diameter, rotation, xImpulse, yImpulse, rotationImpulse, health, speed));
+      if (actor instanceof PlayerActor) {
+        return Optional.of(new PlayerActor(x, y, diameter, rotation, xImpulse, yImpulse, rotationImpulse, health, speed));
+      } else {
+        return Optional.of(new Actor(x, y, diameter, rotation, xImpulse, yImpulse, rotationImpulse, health, speed));
+      }
     } else {
       return Optional.empty();
     }
