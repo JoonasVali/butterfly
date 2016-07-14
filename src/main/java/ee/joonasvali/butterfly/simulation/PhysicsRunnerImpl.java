@@ -17,7 +17,8 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
   public static final int MAX_ROTATION_IMPULSE = 5;
   public static final double IMPULSE_DECAY = 1.1;
   public static final int HEALTH_DECAY = 1;
-  public static final int DIAMETER_DETECTION = 50;
+  public static final int DIAMETER_DETECTION = 100;
+  public static final int SIDEWAYS_IMPULSE_MODIFIER = 70;
 
 
   private HashMap<Actor, Double> healthToAdd = new HashMap<>();
@@ -71,8 +72,8 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
           continue;
         } else if (isInRadius(f, x - DIAMETER_DETECTION / 2, y - DIAMETER_DETECTION / 2, diameter + DIAMETER_DETECTION)) {
           // If food close to actor, but not in radius.
-          fXImp += (fmidX - midX) / 20;
-          fYImp += (fmidY - midY) / 20;
+          fXImp += (fmidX - midX) / (SIDEWAYS_IMPULSE_MODIFIER - Math.abs(actor.getYImpulse() /* Y on purpose */));
+          fYImp += (fmidY - midY) / (SIDEWAYS_IMPULSE_MODIFIER - Math.abs(actor.getXImpulse() /* X on purpose */));
         }
 
         Food newFood = new Food(fx, fy, fdiam, frot, fXImp, fYImp, fRotImpulse, points);
