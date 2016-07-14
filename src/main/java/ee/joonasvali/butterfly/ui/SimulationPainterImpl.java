@@ -81,7 +81,7 @@ public class SimulationPainterImpl implements SimulationPainter {
     g.setColor(Color.orange);
     for (Food f : food) {
       this.food.setRotation((float) (f.getRotation() + 90));
-      g.drawImage(this.food, f.getX(), f.getY());
+      g.drawImage(this.food, f.getRoundedX(), f.getRoundedY());
     }
   }
 
@@ -89,13 +89,13 @@ public class SimulationPainterImpl implements SimulationPainter {
     for (Actor actor : actors) {
       if (actor.getHealth() > 800) {
         this.actorOk.setRotation((float) actor.getRotation() + 90);
-        g.drawImage(this.actorOk, actor.getX(), actor.getY());
+        g.drawImage(this.actorOk, actor.getRoundedX(), actor.getRoundedY());
       } else if (actor.getHealth() > 400) {
         this.actorMedium.setRotation((float) actor.getRotation() + 90);
-        g.drawImage(this.actorMedium, actor.getX(), actor.getY());
+        g.drawImage(this.actorMedium, actor.getRoundedX(), actor.getRoundedY());
       } else {
         this.actorBad.setRotation((float) actor.getRotation() + 90);
-        g.drawImage(this.actorBad, actor.getX(), actor.getY());
+        g.drawImage(this.actorBad, actor.getRoundedX(), actor.getRoundedY());
       }
     }
   }

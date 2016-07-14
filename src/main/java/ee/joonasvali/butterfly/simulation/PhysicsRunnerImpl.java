@@ -34,8 +34,8 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
     ArrayList<Food> result = new ArrayList<>(food);
     ArrayList<Food> added = new ArrayList<>(food.size());
     for (Actor actor : actors) {
-      int x = actor.getX();
-      int y = actor.getY();
+      double x = actor.getX();
+      double y = actor.getY();
       int diameter = actor.getDiameter();
       if (!added.isEmpty()) {
         result.addAll(added);
@@ -75,7 +75,7 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
           fYImp += (fmidY - midY) / 20;
         }
 
-        Food newFood = new Food((int)fx, (int)fy, fdiam, frot, fXImp, fYImp, fRotImpulse, points);
+        Food newFood = new Food(fx, fy, fdiam, frot, fXImp, fYImp, fRotImpulse, points);
         it.remove();
         added.add(newFood);
       }
@@ -108,7 +108,7 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
       fXImp = (fx - f.getX()) / IMPULSE_DECAY;
       fYImp = (fy - f.getY()) / IMPULSE_DECAY;
 
-      Food newFood = new Food((int)fx, (int)fy, fdiam, frot, fXImp, fYImp, fRotImpulse, points);
+      Food newFood = new Food(fx, fy, fdiam, frot, fXImp, fYImp, fRotImpulse, points);
       added.add(newFood);
     }
 
@@ -117,7 +117,7 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
     return result;
   }
 
-  private boolean isInRadius(Food f, int x, int y, int diameter) {
+  private boolean isInRadius(Physical f, double x, double y, int diameter) {
     double radius = diameter / 2;
     double midX = x + radius;
     double midY = y + radius;
@@ -144,8 +144,8 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
   private Optional<Actor> act(Actor actor, int width, int height) {
     double rotation = actor.getRotation();
     int health = actor.getHealth() - HEALTH_DECAY;
-    int x = actor.getX();
-    int y = actor.getY();
+    double x = actor.getX();
+    double y = actor.getY();
     int diameter = actor.getDiameter();
     double rotationImpulse = actor.getRotationImpulse();
     double xImpulse = actor.getXImpulse();
@@ -174,8 +174,8 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
     xMovement = thrust * Math.cos(Math.toRadians(rotation));
     yMovement = thrust * Math.sin(Math.toRadians(rotation));
 
-    x+= xMovement + xImpulse;
-    y+= yMovement + yImpulse;
+    x += xMovement + xImpulse;
+    y += yMovement + yImpulse;
 
     /*
       Limit world boundaries
@@ -185,6 +185,7 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
 
     xImpulse = (x - actor.getX()) / IMPULSE_DECAY;
     yImpulse = (y - actor.getY()) / IMPULSE_DECAY;
+
 
     if (health > 0) {
       if (actor instanceof PlayerActor) {

@@ -9,7 +9,7 @@ public class Actor extends Physical {
   private final int health;
   private final double speed;
 
-  public Actor(int x, int y, int diameter, double rotation, double xImpulse, double yImpulse, double rotationImpulse, int health, double speed) {
+  public Actor(double x, double y, int diameter, double rotation, double xImpulse, double yImpulse, double rotationImpulse, int health, double speed) {
     super(x, y, diameter, rotation, xImpulse, yImpulse, rotationImpulse);
     this.health = health;
     this.speed = speed;

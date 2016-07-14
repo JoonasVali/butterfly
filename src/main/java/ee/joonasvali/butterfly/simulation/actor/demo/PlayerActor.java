@@ -8,7 +8,7 @@ import ee.joonasvali.butterfly.simulation.actor.WorldView;
  * For debugging reasons.
  */
 public class PlayerActor extends Actor {
-  public PlayerActor(int x, int y, int diameter, double rotation, double xImpulse, double yImpulse, double rotationImpulse, int health, double speed) {
+  public PlayerActor(double x, double y, int diameter, double rotation, double xImpulse, double yImpulse, double rotationImpulse, int health, double speed) {
     super(x, y, diameter, rotation, xImpulse, yImpulse, rotationImpulse, health, speed);
   }
 

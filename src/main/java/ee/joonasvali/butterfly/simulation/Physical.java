@@ -4,15 +4,15 @@ package ee.joonasvali.butterfly.simulation;
  * @author Joonas Vali July 2016
  */
 public class Physical {
-  private final int x;
-  private final int y;
+  private final double x;
+  private final double y;
   private final double rotation;
   private final double rotationImpulse;
   private final double xImpulse;
   private final double yImpulse;
   private final int diameter;
 
-  public Physical(int x, int y, int diameter, double rotation, double xImpulse, double yImpulse, double rotationImpulse) {
+  public Physical(double x, double y, int diameter, double rotation, double xImpulse, double yImpulse, double rotationImpulse) {
     this.x = x;
     this.y = y;
     this.diameter = diameter;
@@ -26,12 +26,20 @@ public class Physical {
     return diameter;
   }
 
-  public int getX() {
+  public double getX() {
     return x;
   }
 
-  public int getY() {
+  public double getY() {
     return y;
+  }
+
+  public int getRoundedX() {
+    return (int) Math.round(x);
+  }
+
+  public int getRoundedY() {
+    return (int) Math.round(y);
   }
 
   public double getRotation() {
