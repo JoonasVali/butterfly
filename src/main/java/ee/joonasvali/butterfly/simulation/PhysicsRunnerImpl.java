@@ -17,6 +17,7 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
   public static final int MAX_ROTATION_IMPULSE = 5;
   public static final double IMPULSE_DECAY = 1.1;
   public static final int HEALTH_DECAY = 1;
+  public static final int DIAMETER_DETECTION = 50;
 
 
   private HashMap<Actor, Double> healthToAdd = new HashMap<>();
@@ -29,8 +30,6 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
     return new SimulationState(newActors, newFood, original.getWidth(), original.getHeight());
   }
 
-  // Collect food
-  // This might share references from the 'past' foods, because they immutable, it should be ok.
   private ArrayList<Food> modifyFood(ArrayList<Food> food, ArrayList<Actor> actors, int width, int height) {
     ArrayList<Food> result = new ArrayList<>(food);
     ArrayList<Food> added = new ArrayList<>(food.size());
@@ -70,7 +69,7 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
           }
           it.remove();
           continue;
-        } else if (isInRadius(f, x, y, diameter + 50)) {
+        } else if (isInRadius(f, x - DIAMETER_DETECTION / 2, y - DIAMETER_DETECTION / 2, diameter + DIAMETER_DETECTION)) {
           // If food close to actor, but not in radius.
           fXImp += (fmidX - midX) / 20;
           fYImp += (fmidY - midY) / 20;
