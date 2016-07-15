@@ -62,7 +62,7 @@ public class ButterFly extends BasicGame {
   }
 
   private SimulationState createInitialState(int simWidth, int simHeight) {
-    return new SimulationState(getActors(simWidth, simHeight), getFood(simWidth, simHeight), simWidth, simHeight);
+    return new SimulationState(0, getActors(simWidth, simHeight), getFood(simWidth, simHeight), simWidth, simHeight);
   }
 
   private ArrayList<Food> getFood(int simWidth, int simHeight) {
@@ -110,6 +110,8 @@ public class ButterFly extends BasicGame {
     graphics.drawString("Hello world!", 10, 20);
     ui.drawUI(graphics);
     ui.drawSimulation(container.getPainter(), container.getState());
+    ui.drawUITop(graphics, container.getTotalFrames());
+    graphics.flush();
   }
 
 

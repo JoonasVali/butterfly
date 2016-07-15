@@ -18,7 +18,7 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
   public static final double IMPULSE_DECAY = 1.1;
   public static final int HEALTH_DECAY = 1;
   public static final int DIAMETER_DETECTION = 100;
-  public static final int SIDEWAYS_IMPULSE_MODIFIER = 70;
+  public static final int SIDEWAYS_IMPULSE_MODIFIER = 170;
 
 
   private HashMap<Actor, Double> healthToAdd = new HashMap<>();
@@ -28,7 +28,7 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
     ArrayList<Actor> actors = original.getActors();
     ArrayList<Actor> newActors = modifyActors(actors, original.getWidth(), original.getHeight());
     ArrayList<Food> newFood = modifyFood(original.getFood(), newActors, original.getWidth(), original.getHeight());
-    return new SimulationState(newActors, newFood, original.getWidth(), original.getHeight());
+    return new SimulationState(original.getFrameNumber() + 1, newActors, newFood, original.getWidth(), original.getHeight());
   }
 
   private ArrayList<Food> modifyFood(ArrayList<Food> food, ArrayList<Actor> actors, int width, int height) {
@@ -72,6 +72,7 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
           continue;
         } else if (isInRadius(f, x - DIAMETER_DETECTION / 2, y - DIAMETER_DETECTION / 2, diameter + DIAMETER_DETECTION)) {
           // If food close to actor, but not in radius.
+          double impulse = getImpulseVector(actor);
           fXImp += (fmidX - midX) / (SIDEWAYS_IMPULSE_MODIFIER - Math.abs(actor.getYImpulse() /* Y on purpose */));
           fYImp += (fmidY - midY) / (SIDEWAYS_IMPULSE_MODIFIER - Math.abs(actor.getXImpulse() /* X on purpose */));
         }
@@ -116,6 +117,10 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
     result.clear();
     result.addAll(added);
     return result;
+  }
+
+  private double getImpulseVector(Physical p) {
+    return Math.sqrt(Math.pow(p.getXImpulse(), 2) + Math.pow(p.getYImpulse(), 2));
   }
 
   private boolean isInRadius(Physical f, double x, double y, int diameter) {

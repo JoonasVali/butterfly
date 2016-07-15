@@ -50,6 +50,10 @@ public class SimulationContainer {
     states.add(next);
   }
 
+  public int getTotalFrames() {
+    return states.size();
+  }
+
   public PlayerActor getActor() {
     return actor;
   }

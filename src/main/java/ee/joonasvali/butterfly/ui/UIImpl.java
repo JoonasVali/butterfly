@@ -5,7 +5,6 @@ import ee.joonasvali.butterfly.simulation.SimulationState;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class UIImpl implements UI {
   private final ButterFlyConfig config;
@@ -31,11 +30,14 @@ public class UIImpl implements UI {
 
   @Override
   public void drawUI(Graphics g) {
-    g.setAntiAlias(true);
     g.setColor(Color.orange);
     g.drawRect(10, 10, config.getWindowResolutionWidth() - 20, config.getWindowResolutionHeight() - 20);
     g.drawLine(10, config.getWindowResolutionHeight() - 100, config.getWindowResolutionWidth() - 10, config.getWindowResolutionHeight() - 100);
-    g.flush();
+  }
+
+  @Override
+  public void drawUITop(Graphics g, int totalFrames) {
+    drawFrameCounter(g, totalFrames);
   }
 
   public void drawSimulation(SimulationPainter painter, SimulationState simulationState) {
@@ -49,6 +51,11 @@ public class UIImpl implements UI {
     }
 
     i.draw(simulationX, simulationY, simulationScale);
+  }
+
+  private void drawFrameCounter(Graphics g, int totalFrames) {
+    g.setColor(Color.white);
+    g.drawString("Frame: " + totalFrames, 100, 10);
   }
 
 

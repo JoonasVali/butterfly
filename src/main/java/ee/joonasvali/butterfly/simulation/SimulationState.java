@@ -13,8 +13,10 @@ public class SimulationState {
 
   private final ArrayList<Actor> actors;
   private final ArrayList<Food> food;
+  private final int frameNumber;
 
-  public SimulationState(ArrayList<Actor> actors, ArrayList<Food> food, int width, int height) {
+  public SimulationState(int frameNumber, ArrayList<Actor> actors, ArrayList<Food> food, int width, int height) {
+    this.frameNumber = frameNumber;
     this.food = food;
     this.actors = actors;
     this.width = width;
@@ -35,5 +37,9 @@ public class SimulationState {
 
   public ArrayList<Food> getFood() {
     return food;
+  }
+
+  public int getFrameNumber() {
+    return frameNumber;
   }
 }
