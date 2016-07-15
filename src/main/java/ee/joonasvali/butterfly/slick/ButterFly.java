@@ -168,7 +168,7 @@ public class ButterFly extends BasicGame {
         0,
         0,
         INITIAL_HEALTH,
-        Math.random() * 3
+        1 + Math.random() * 3
     );
   }
 }
