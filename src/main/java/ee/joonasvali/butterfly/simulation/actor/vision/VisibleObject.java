@@ -36,7 +36,7 @@ public class VisibleObject {
 
   public VisibleObject(double relativeRotationToObject, double distance, double diameter) {
     this.diameter = diameter;
-    this.relativeRotationToObject = relativeRotationToObject;
+    this.relativeRotationToObject = relativeRotationToObject % 360;
     this.distance = distance;
   }
 

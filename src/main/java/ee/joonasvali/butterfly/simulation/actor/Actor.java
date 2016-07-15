@@ -34,7 +34,7 @@ public class Actor extends Physical {
    */
   public Action move(List<VisibleActor> actorList, List<VisibleFood> foodList) {
     if (actorList.isEmpty()) {
-      // get nearest food.
+//       get nearest food.
       double nearestDistance = Double.MAX_VALUE;
       VisibleFood nearest = null;
       for (VisibleFood f: foodList) {
@@ -44,14 +44,17 @@ public class Actor extends Physical {
         }
       }
       if (nearest == null) {
-        return new Action(speed, 20);
+        if ((getX() + getY() + getRotation()) % 2 == 0) {
+          return new Action(speed / 2, 3);
+        }
+        return new Action(speed / 2, -3);
       }
       double rot = nearest.getRelativeRotationToObject();
-      if (Math.abs(rot) < 2) {
+      if (Math.abs(rot) < 5) {
         return new Action(speed, 0);
       }
 
-      return new Action(speed, rot / nearestDistance * 100);
+      return new Action(speed / 2, rot / 15);
     }
 
     else {
