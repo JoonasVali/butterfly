@@ -17,6 +17,12 @@ public class ButterFlyConfig {
   private int actorVisionWidnessDegrees;
   @Value("${actor.vision.distance}")
   private int actorVisionDistance;
+  @Value("${simulation.size.multiplier}")
+  private int simulationSizeMultiplier;
+  @Value("${actor.count}")
+  private int actorsInSimulation;
+  @Value("${actor.initialhealth}")
+  private int actorInitialHealth;
 
   public int getWindowResolutionWidth() {
     return windowResolutionWidth;
@@ -44,5 +50,17 @@ public class ButterFlyConfig {
 
   public int getActorVisionDistance() {
     return actorVisionDistance;
+  }
+
+  public int getSimulationSizeMultiplier() {
+    return simulationSizeMultiplier;
+  }
+
+  public int getActorsInSimulation() {
+    return actorsInSimulation;
+  }
+
+  public int getActorInitialHealth() {
+    return actorInitialHealth;
   }
 }

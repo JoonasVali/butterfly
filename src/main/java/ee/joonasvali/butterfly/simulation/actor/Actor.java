@@ -50,11 +50,8 @@ public class Actor extends Physical {
       if (Math.abs(rot) < 2) {
         return new Action(speed, 0);
       }
-      if (rot > 0) {
-        return new Action(speed, 30);
-      } else {
-        return new Action(speed, -30);
-      }
+
+      return new Action(speed, rot / nearestDistance * 100);
     }
 
     else {

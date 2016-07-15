@@ -24,10 +24,11 @@ import java.util.ArrayList;
  * Demo class to start up the slick, replace it with what ever you need.
  */
 public class ButterFly extends BasicGame {
-  public static final int SIMULATION_SIZE_MULTIPLIER = 2;
   public static final int CLOCK = 50;
-  public static final int ACTORS_IN_SIMULATION = 10;
-  public static final int INITIAL_HEALTH = 1000;
+
+  private final int simulationSizeMultiplier;
+  private final int actorsInSimulation;
+  private final int initialHealth;
 
   private final UI ui;
   private final ButterFlyConfig config;
@@ -46,14 +47,17 @@ public class ButterFly extends BasicGame {
     this.visionHelper = visionHelper;
     this.ui = ui;
     this.config = config;
+    simulationSizeMultiplier = config.getSimulationSizeMultiplier();
+    initialHealth = config.getActorInitialHealth();
+    actorsInSimulation = config.getActorsInSimulation();
   }
 
   @Override
   public void init(GameContainer gameContainer) throws SlickException {
     int height = config.getWindowResolutionHeight();
     int width = config.getWindowResolutionWidth();
-    int simWidth = SIMULATION_SIZE_MULTIPLIER * width;
-    int simHeight = SIMULATION_SIZE_MULTIPLIER * height;
+    int simWidth = simulationSizeMultiplier * width;
+    int simHeight = simulationSizeMultiplier * height;
     container = new SimulationContainer(
         runner,
         createInitialState(simWidth, simHeight),
@@ -154,10 +158,10 @@ public class ButterFly extends BasicGame {
 
   public ArrayList<Actor> getActors(int simWidth, int simHeight) {
     ArrayList<Actor> actors = new ArrayList<>();
-    for (int i = 0; i < ACTORS_IN_SIMULATION; i++) {
+    for (int i = 0; i < actorsInSimulation; i++) {
       actors.add(createRandomActor(simWidth - config.getActorDiameter(), simHeight - config.getActorDiameter()));
     }
-    actors.add(new PlayerActor(10, 10, config.getActorDiameter(), 0, 0, 0, 0, INITIAL_HEALTH, 3));
+    actors.add(new PlayerActor(10, 10, config.getActorDiameter(), 0, 0, 0, 0, initialHealth, 3));
     return actors;
   }
 
@@ -171,7 +175,7 @@ public class ButterFly extends BasicGame {
         0,
         0,
         0,
-        INITIAL_HEALTH,
+        initialHealth,
         1 + Math.random() * 3
     );
   }
