@@ -163,6 +163,7 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
       health += healthToAdd;
     }
 
+
     Action action = actor.move(new WorldView(/* TODO */));
 
     rotationImpulse += action.getRotation();

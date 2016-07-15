@@ -4,6 +4,7 @@ package ee.joonasvali.butterfly.spring;
 import ee.joonasvali.butterfly.config.ButterFlyConfig;
 import ee.joonasvali.butterfly.simulation.PhysicsRunner;
 import ee.joonasvali.butterfly.simulation.PhysicsRunnerImpl;
+import ee.joonasvali.butterfly.simulation.actor.ActorVisionHelper;
 import ee.joonasvali.butterfly.slick.ButterFly;
 import ee.joonasvali.butterfly.ui.SimulationPainter;
 import ee.joonasvali.butterfly.ui.SimulationPainterImpl;
@@ -22,13 +23,18 @@ public class SpringConfig {
   }
 
   @Bean
+  public ActorVisionHelper getActorVisionHelper(ButterFlyConfig config) {
+    return new ActorVisionHelper(config);
+  }
+
+  @Bean
   public PhysicsRunner getPhysics() {
     return new PhysicsRunnerImpl();
   }
 
   @Bean
-  public ButterFly getButterFly(UI ui, ButterFlyConfig config, PhysicsRunner runner) {
-    return new ButterFly(ui, config, runner);
+  public ButterFly getButterFly(UI ui, ButterFlyConfig config, PhysicsRunner runner, ActorVisionHelper helper) {
+    return new ButterFly(ui, config, runner, helper);
   }
 
   @Bean

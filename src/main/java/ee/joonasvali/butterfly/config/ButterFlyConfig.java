@@ -13,6 +13,10 @@ public class ButterFlyConfig {
   private int actorDiameter;
   @Value("${food.diameter}")
   private int foodDiameter;
+  @Value("${actor.vision.wideness.degrees}")
+  private int actorVisionWidnessDegrees;
+  @Value("${actor.vision.distance}")
+  private int actorVisionDistance;
 
   public int getWindowResolutionWidth() {
     return windowResolutionWidth;
@@ -32,5 +36,13 @@ public class ButterFlyConfig {
 
   public int getFoodDiameter() {
     return foodDiameter;
+  }
+
+  public int getActorVisionWidnessDegrees() {
+    return actorVisionWidnessDegrees;
+  }
+
+  public int getActorVisionDistance() {
+    return actorVisionDistance;
   }
 }

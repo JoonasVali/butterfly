@@ -29,8 +29,10 @@ public class SimulationPainterImpl implements SimulationPainter {
   private final Image actorBad;
   private final Image food;
   private final Graphics g;
+  private final ActorVisionHelper visionHelper;
 
-  public SimulationPainterImpl(int width, int height, int actorDiameter, int foodDiameter) throws SlickException {
+  public SimulationPainterImpl(int width, int height, int actorDiameter, int foodDiameter, ActorVisionHelper visionHelper) throws SlickException {
+    this.visionHelper = visionHelper;
     this.width = width;
     this.height = height;
     this.actorDiameter = actorDiameter;
@@ -105,12 +107,12 @@ public class SimulationPainterImpl implements SimulationPainter {
 
   private void drawVision(Graphics g, Actor actor) {
     g.setColor(Color.pink);
-    int ax = ActorVisionHelper.getActorVisionAX(actor);
-    int ay = ActorVisionHelper.getActorVisionAY(actor);
-    int bx = ActorVisionHelper.getActorVisionBX(actor);
-    int by = ActorVisionHelper.getActorVisionBY(actor);
-    int cx = ActorVisionHelper.getActorVisionCX(actor);
-    int cy = ActorVisionHelper.getActorVisionCY(actor);
+    int ax = visionHelper.getActorVisionAX(actor);
+    int ay = visionHelper.getActorVisionAY(actor);
+    int bx = visionHelper.getActorVisionBX(actor);
+    int by = visionHelper.getActorVisionBY(actor);
+    int cx = visionHelper.getActorVisionCX(actor);
+    int cy = visionHelper.getActorVisionCY(actor);
     g.drawLine(ax, ay, cx, cy);
     g.drawLine(bx, by, cx, cy);
     g.drawLine(ax, ay, bx, by);

@@ -6,6 +6,7 @@ import ee.joonasvali.butterfly.simulation.actor.Actor;
 import ee.joonasvali.butterfly.simulation.PhysicsRunner;
 import ee.joonasvali.butterfly.simulation.SimulationContainer;
 import ee.joonasvali.butterfly.simulation.SimulationState;
+import ee.joonasvali.butterfly.simulation.actor.ActorVisionHelper;
 import ee.joonasvali.butterfly.simulation.actor.demo.PlayerActor;
 import ee.joonasvali.butterfly.ui.SimulationPainterImpl;
 import ee.joonasvali.butterfly.ui.UI;
@@ -31,6 +32,7 @@ public class ButterFly extends BasicGame {
   private final UI ui;
   private final ButterFlyConfig config;
   private final PhysicsRunner runner;
+  private final ActorVisionHelper visionHelper;
 
   private SimulationContainer container;
 
@@ -38,9 +40,10 @@ public class ButterFly extends BasicGame {
   private final static Logger log = LoggerFactory.getLogger(ButterFly.class);
   private volatile boolean shutdown;
 
-  public ButterFly(UI ui, ButterFlyConfig config, PhysicsRunner runner) {
+  public ButterFly(UI ui, ButterFlyConfig config, PhysicsRunner runner, ActorVisionHelper visionHelper) {
     super("ButterFly");
     this.runner = runner;
+    this.visionHelper = visionHelper;
     this.ui = ui;
     this.config = config;
   }
@@ -54,7 +57,7 @@ public class ButterFly extends BasicGame {
     container = new SimulationContainer(
         runner,
         createInitialState(simWidth, simHeight),
-        new SimulationPainterImpl(simWidth, simHeight, config.getActorDiameter(), config.getFoodDiameter()),
+        new SimulationPainterImpl(simWidth, simHeight, config.getActorDiameter(), config.getFoodDiameter(), visionHelper),
         simWidth,
         simHeight
     );
