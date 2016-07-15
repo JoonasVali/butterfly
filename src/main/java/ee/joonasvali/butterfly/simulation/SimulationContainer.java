@@ -61,4 +61,13 @@ public class SimulationContainer {
   public SimulationState getState() {
     return states.get(states.size() - 1);
   }
+
+  public void reset() {
+    if (states.size() > 0) {
+      SimulationState s = states.get(0);
+      states.clear();
+      states.add(s);
+    }
+
+  }
 }

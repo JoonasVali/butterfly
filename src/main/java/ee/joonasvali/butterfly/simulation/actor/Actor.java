@@ -12,9 +12,11 @@ import java.util.List;
 public class Actor extends Physical {
   private final int health;
   private final double speed;
+  private final String id;
 
-  public Actor(double x, double y, int diameter, double rotation, double xImpulse, double yImpulse, double rotationImpulse, int health, double speed) {
+  public Actor(String id, double x, double y, int diameter, double rotation, double xImpulse, double yImpulse, double rotationImpulse, int health, double speed) {
     super(x, y, diameter, rotation, xImpulse, yImpulse, rotationImpulse);
+    this.id = id;
     this.health = health;
     this.speed = speed;
   }
@@ -68,5 +70,9 @@ public class Actor extends Physical {
       }
     }
 
+  }
+
+  public String getId() {
+    return id;
   }
 }

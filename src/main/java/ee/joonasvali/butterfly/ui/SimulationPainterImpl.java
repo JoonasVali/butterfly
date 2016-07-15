@@ -5,9 +5,11 @@ import ee.joonasvali.butterfly.simulation.actor.Actor;
 import ee.joonasvali.butterfly.simulation.SimulationState;
 import ee.joonasvali.butterfly.simulation.actor.vision.ActorVisionHelper;
 import org.newdawn.slick.Color;
+import org.newdawn.slick.Font;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.TrueTypeFont;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +31,7 @@ public class SimulationPainterImpl implements SimulationPainter {
   private final Image actorBad;
   private final Image food;
   private final Graphics g;
+  private final Font font;
   private final ActorVisionHelper visionHelper;
 
   public SimulationPainterImpl(int width, int height, int actorDiameter, int foodDiameter, ActorVisionHelper visionHelper) throws SlickException {
@@ -45,7 +48,13 @@ public class SimulationPainterImpl implements SimulationPainter {
 
     this.image.setFilter(Image.FILTER_LINEAR);
     this.g = image.getGraphics();
+    this.font = createFont();
     g.setAntiAlias(true);
+  }
+
+  private Font createFont() {
+    java.awt.Font awtFont = new java.awt.Font("Arial", java.awt.Font.BOLD, 24);
+    return new TrueTypeFont(awtFont, true);
   }
 
   private Image createFood() throws SlickException {
@@ -100,8 +109,12 @@ public class SimulationPainterImpl implements SimulationPainter {
         this.actorBad.setRotation((float) actor.getRotation() + 90);
         g.drawImage(this.actorBad, actor.getRoundedX(), actor.getRoundedY());
       }
-
+      Font previous = g.getFont();
+      g.setFont(font);
+      g.drawString(actor.getId(), actor.getRoundedX() + actorDiameter + 5, actor.getRoundedY() - 5);
+      g.setFont(previous);
       drawVision(g, actor);
+
     }
   }
 

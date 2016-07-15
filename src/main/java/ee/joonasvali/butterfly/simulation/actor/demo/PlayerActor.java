@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class PlayerActor extends Actor {
   public PlayerActor(double x, double y, int diameter, double rotation, double xImpulse, double yImpulse, double rotationImpulse, int health, double speed) {
-    super(x, y, diameter, rotation, xImpulse, yImpulse, rotationImpulse, health, speed);
+    super("Player", x, y, diameter, rotation, xImpulse, yImpulse, rotationImpulse, health, speed);
   }
 
   private volatile double thrust;

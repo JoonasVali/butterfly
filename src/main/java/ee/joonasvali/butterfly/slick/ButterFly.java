@@ -133,6 +133,9 @@ public class ButterFly extends BasicGame {
     } else if (Input.KEY_S == key) {
       thrust = -2;
     }
+    if (Input.KEY_SPACE == key) {
+      container.reset();
+    }
   }
 
   @Override
@@ -160,6 +163,7 @@ public class ButterFly extends BasicGame {
 
   private Actor createRandomActor(int simWidth, int simHeight) {
     return new Actor(
+        getRandomId(),
         (int) (Math.random() * simWidth),
         (int) (Math.random() * simHeight),
         config.getActorDiameter(),
@@ -171,4 +175,11 @@ public class ButterFly extends BasicGame {
         1 + Math.random() * 3
     );
   }
+
+  public String getRandomId() {
+    String[] firstNames = {"JAMES", "JOHN", "ROBERT", "MICHAEL", "WILLIAM", "DAVID", "RICHARD", "CHARLES", "JOSEPH"};
+    String[] lastNames = {"GATES", "DOE", "HOLMES", "PARK", "SEAGULL", "BEAR", "TARGARYEN", "SNOW", "LANNISTER", "SMITH", "STARK"};
+    return firstNames[((int) (Math.random() * firstNames.length))] + " " + lastNames[((int) (Math.random() * lastNames.length))];
+  }
+
 }

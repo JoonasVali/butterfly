@@ -206,7 +206,7 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
       if (actor instanceof PlayerActor) {
         return Optional.of(new PlayerActor(x, y, diameter, rotation, xImpulse, yImpulse, rotationImpulse, health, speed));
       } else {
-        return Optional.of(new Actor(x, y, diameter, rotation, xImpulse, yImpulse, rotationImpulse, health, speed));
+        return Optional.of(new Actor(actor.getId(), x, y, diameter, rotation, xImpulse, yImpulse, rotationImpulse, health, speed));
       }
     } else {
       return Optional.empty();
