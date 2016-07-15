@@ -203,4 +203,29 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
       return Optional.empty();
     }
   }
+
+  /**
+   * function taken from http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-2d-triangle
+   * @param x
+   * @param y
+   * @param ax
+   * @param ay
+   * @param bx
+   * @param by
+   * @param cx
+   * @param cy
+   * @return
+   */
+  private boolean isPointInTriangle(int x, int y, int ax, int ay, int bx, int by, int cx, int cy) {
+    int as_x = x - ax;
+    int as_y = y - ay;
+
+    boolean s_ab = (bx - ax) * as_y - (by - ay) * as_x > 0;
+
+    if ((cx - ax) * as_y - (cy - ay) * as_x > 0 == s_ab) return false;
+
+    if ((cx - bx) * (y - by) - (cy - by) * (x - bx) > 0 != s_ab) return false;
+
+    return true;
+  }
 }

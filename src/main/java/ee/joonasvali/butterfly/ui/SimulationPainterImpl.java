@@ -3,6 +3,7 @@ package ee.joonasvali.butterfly.ui;
 import ee.joonasvali.butterfly.simulation.Food;
 import ee.joonasvali.butterfly.simulation.actor.Actor;
 import ee.joonasvali.butterfly.simulation.SimulationState;
+import ee.joonasvali.butterfly.simulation.actor.ActorVisionHelper;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -97,6 +98,21 @@ public class SimulationPainterImpl implements SimulationPainter {
         this.actorBad.setRotation((float) actor.getRotation() + 90);
         g.drawImage(this.actorBad, actor.getRoundedX(), actor.getRoundedY());
       }
+
+      drawVision(g, actor);
     }
+  }
+
+  private void drawVision(Graphics g, Actor actor) {
+    g.setColor(Color.pink);
+    int ax = ActorVisionHelper.getActorVisionAX(actor);
+    int ay = ActorVisionHelper.getActorVisionAY(actor);
+    int bx = ActorVisionHelper.getActorVisionBX(actor);
+    int by = ActorVisionHelper.getActorVisionBY(actor);
+    int cx = ActorVisionHelper.getActorVisionCX(actor);
+    int cy = ActorVisionHelper.getActorVisionCY(actor);
+    g.drawLine(ax, ay, cx, cy);
+    g.drawLine(bx, by, cx, cy);
+    g.drawLine(ax, ay, bx, by);
   }
 }
