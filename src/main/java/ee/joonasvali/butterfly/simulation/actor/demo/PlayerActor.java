@@ -2,7 +2,10 @@ package ee.joonasvali.butterfly.simulation.actor.demo;
 
 import ee.joonasvali.butterfly.simulation.actor.Action;
 import ee.joonasvali.butterfly.simulation.actor.Actor;
-import ee.joonasvali.butterfly.simulation.actor.WorldView;
+import ee.joonasvali.butterfly.simulation.actor.vision.VisibleActor;
+import ee.joonasvali.butterfly.simulation.actor.vision.VisibleFood;
+
+import java.util.List;
 
 /**
  * For debugging reasons.
@@ -21,7 +24,7 @@ public class PlayerActor extends Actor {
   }
 
   @Override
-  public Action move(WorldView view) {
+  public Action move(List<VisibleActor> actorList, List<VisibleFood> foodList) {
     return new Action(thrust, rotate);
   }
 }

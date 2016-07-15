@@ -6,7 +6,7 @@ import ee.joonasvali.butterfly.simulation.actor.Actor;
 import ee.joonasvali.butterfly.simulation.PhysicsRunner;
 import ee.joonasvali.butterfly.simulation.SimulationContainer;
 import ee.joonasvali.butterfly.simulation.SimulationState;
-import ee.joonasvali.butterfly.simulation.actor.ActorVisionHelper;
+import ee.joonasvali.butterfly.simulation.actor.vision.ActorVisionHelper;
 import ee.joonasvali.butterfly.simulation.actor.demo.PlayerActor;
 import ee.joonasvali.butterfly.ui.SimulationPainterImpl;
 import ee.joonasvali.butterfly.ui.UI;

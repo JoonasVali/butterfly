@@ -1,6 +1,7 @@
-package ee.joonasvali.butterfly.simulation.actor;
+package ee.joonasvali.butterfly.simulation.actor.vision;
 
 import ee.joonasvali.butterfly.config.ButterFlyConfig;
+import ee.joonasvali.butterfly.simulation.actor.Actor;
 
 /**
  * @author Joonas Vali July 2016

@@ -3,7 +3,7 @@ package ee.joonasvali.butterfly.ui;
 import ee.joonasvali.butterfly.simulation.Food;
 import ee.joonasvali.butterfly.simulation.actor.Actor;
 import ee.joonasvali.butterfly.simulation.SimulationState;
-import ee.joonasvali.butterfly.simulation.actor.ActorVisionHelper;
+import ee.joonasvali.butterfly.simulation.actor.vision.ActorVisionHelper;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;

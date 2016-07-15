@@ -1,6 +1,11 @@
 package ee.joonasvali.butterfly.simulation.actor;
 
 import ee.joonasvali.butterfly.simulation.Physical;
+import ee.joonasvali.butterfly.simulation.actor.vision.VisibleActor;
+import ee.joonasvali.butterfly.simulation.actor.vision.VisibleFood;
+import ee.joonasvali.butterfly.simulation.actor.vision.VisibleObject;
+
+import java.util.List;
 
 /**
  * @author Joonas Vali July 2016
@@ -24,7 +29,7 @@ public class Actor extends Physical {
   }
 
   // TODO
-  public Action move(WorldView view) {
+  public Action move(List<VisibleActor> actorList, List<VisibleFood> foodList) {
     if (System.currentTimeMillis() % 5000 < 1000) {
       return new Action(0, 0);
     }

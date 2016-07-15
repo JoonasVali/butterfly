@@ -2,12 +2,16 @@ package ee.joonasvali.butterfly.simulation;
 
 import ee.joonasvali.butterfly.simulation.actor.Action;
 import ee.joonasvali.butterfly.simulation.actor.Actor;
-import ee.joonasvali.butterfly.simulation.actor.WorldView;
+import ee.joonasvali.butterfly.simulation.actor.vision.ActorVisionHelper;
 import ee.joonasvali.butterfly.simulation.actor.demo.PlayerActor;
+import ee.joonasvali.butterfly.simulation.actor.vision.VisibleActor;
+import ee.joonasvali.butterfly.simulation.actor.vision.VisibleFood;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -19,14 +23,17 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
   public static final int HEALTH_DECAY = 1;
   public static final int DIAMETER_DETECTION = 100;
   public static final int SIDEWAYS_IMPULSE_MODIFIER = 170;
+  private final ActorVisionHelper visionHelper;
+  private final HashMap<Actor, Double> healthToAdd = new HashMap<>();
 
-
-  private HashMap<Actor, Double> healthToAdd = new HashMap<>();
+  public PhysicsRunnerImpl(ActorVisionHelper visionHelper) {
+    this.visionHelper = visionHelper;
+  }
 
   @Override
   public SimulationState run(SimulationState original) {
     ArrayList<Actor> actors = original.getActors();
-    ArrayList<Actor> newActors = modifyActors(actors, original.getWidth(), original.getHeight());
+    ArrayList<Actor> newActors = modifyActors(actors, original.getFood(), original.getWidth(), original.getHeight());
     ArrayList<Food> newFood = modifyFood(original.getFood(), newActors, original.getWidth(), original.getHeight());
     return new SimulationState(original.getFrameNumber() + 1, newActors, newFood, original.getWidth(), original.getHeight());
   }
@@ -43,7 +50,7 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
         added.clear();
       }
       Iterator<Food> it = result.iterator();
-      while(it.hasNext()) {
+      while (it.hasNext()) {
         Food f = it.next();
         double fx = f.getX();
         double fy = f.getY();
@@ -58,8 +65,8 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
         double midX = x + diameter / 2;
         double midY = y + diameter / 2;
 
-        double fmidX = f.getX() + (double)fdiam / 2;
-        double fmidY = f.getY() + (double)fdiam / 2;
+        double fmidX = f.getX() + (double) fdiam / 2;
+        double fmidY = f.getY() + (double) fdiam / 2;
 
         if (isInRadius(f, x, y, diameter)) {
           Double health = healthToAdd.get(actor);
@@ -87,7 +94,7 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
     added.clear();
 
     // Make the actual movement
-    for (Food f: result) {
+    for (Food f : result) {
       double fx = f.getX();
       double fy = f.getY();
       double frot = f.getRotation();
@@ -129,25 +136,24 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
     double midY = y + radius;
 
     int fRadius = f.getDiameter() / 2;
-    double fXmid = f.getX() + (double)fRadius;
-    double fYmid = f.getY() + (double)fRadius;
+    double fXmid = f.getX() + (double) fRadius;
+    double fYmid = f.getY() + (double) fRadius;
     double dist = Math.sqrt(Math.pow(midX - fXmid, 2) + Math.pow(midY - fYmid, 2));
     return dist < radius + fRadius;
 
 
-
   }
 
-  private ArrayList<Actor> modifyActors(ArrayList<Actor> actors, int width, int height) {
+  private ArrayList<Actor> modifyActors(List<Actor> actors, List<Food> food, int width, int height) {
     ArrayList<Actor> newActors = new ArrayList<>(actors.size());
     for (Actor actor : actors) {
-      act(actor, width, height).ifPresent(newActors::add);
+      act(actor, actors, food, width, height).ifPresent(newActors::add);
     }
     healthToAdd.clear();
     return newActors;
   }
 
-  private Optional<Actor> act(Actor actor, int width, int height) {
+  private Optional<Actor> act(Actor actor, List<Actor> actors, List<Food> foods, int width, int height) {
     double rotation = actor.getRotation();
     int health = actor.getHealth() - HEALTH_DECAY;
     double x = actor.getX();
@@ -163,8 +169,10 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
       health += healthToAdd;
     }
 
+    List<VisibleActor> visibleActors = getVisibleActors(actor, actors);
+    List<VisibleFood> visibleFoods = getVisibleFoods(actor, foods);
 
-    Action action = actor.move(new WorldView(/* TODO */));
+    Action action = actor.move(visibleActors, visibleFoods);
 
     rotationImpulse += action.getRotation();
     rotationImpulse = Math.min(rotationImpulse, MAX_ROTATION_IMPULSE);
@@ -205,8 +213,52 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
     }
   }
 
+  private List<VisibleFood> getVisibleFoods(Actor actor, List<Food> foods) {
+    int ax = visionHelper.getActorVisionAX(actor);
+    int ay = visionHelper.getActorVisionAY(actor);
+    int bx = visionHelper.getActorVisionBX(actor);
+    int by = visionHelper.getActorVisionBY(actor);
+    int cx = visionHelper.getActorVisionCX(actor);
+    int cy = visionHelper.getActorVisionCY(actor);
+
+    List<VisibleFood> result = Collections.emptyList();
+    for (Food food : foods) {
+      if (isPointInTriangle(food.getRoundedX() + food.getDiameter() / 2, food.getRoundedY() + food.getDiameter() / 2, ax, ay, bx, by, cx, cy)) {
+        if (!(result instanceof ArrayList)) {
+          result = new ArrayList<>();
+        }
+        result.add(new VisibleFood(actor, food));
+      }
+    }
+    return result;
+  }
+
+  private List<VisibleActor> getVisibleActors(Actor actor, List<Actor> actors) {
+    int ax = visionHelper.getActorVisionAX(actor);
+    int ay = visionHelper.getActorVisionAY(actor);
+    int bx = visionHelper.getActorVisionBX(actor);
+    int by = visionHelper.getActorVisionBY(actor);
+    int cx = visionHelper.getActorVisionCX(actor);
+    int cy = visionHelper.getActorVisionCY(actor);
+
+    List<VisibleActor> result = Collections.emptyList();
+    for (Actor other : actors) {
+      if (other == actor) {
+        continue;
+      }
+      if (isPointInTriangle(other.getRoundedX() + other.getDiameter() / 2, other.getRoundedY() + other.getDiameter() / 2, ax, ay, bx, by, cx, cy)) {
+        if (!(result instanceof ArrayList)) {
+          result = new ArrayList<>(3);
+        }
+        result.add(new VisibleActor(actor, other));
+      }
+    }
+    return result;
+  }
+
   /**
    * function taken from http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-2d-triangle
+   *
    * @param x
    * @param y
    * @param ax
