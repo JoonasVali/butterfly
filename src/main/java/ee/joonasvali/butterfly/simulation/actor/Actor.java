@@ -33,8 +33,6 @@ public class Actor extends Physical {
    * Very simple stateless AI implementation.
    */
   public Action move(List<VisibleActor> actorList, List<VisibleFood> foodList) {
-    if (actorList.isEmpty()) {
-//       get nearest food.
       double nearestDistance = Double.MAX_VALUE;
       VisibleFood nearest = null;
       for (VisibleFood f: foodList) {
@@ -44,7 +42,7 @@ public class Actor extends Physical {
         }
       }
       if (nearest == null) {
-//        System.out.println(speed / 2 + " a " + -3);
+
         return new Action(speed / 2, -3);
       }
       double rot = nearest.getRelativeRotationToObject();
@@ -52,22 +50,7 @@ public class Actor extends Physical {
         return new Action(speed, 0);
       }
 
-//      System.out.println(speed / 2 + " b " + rot / 15);
       return new Action(speed / 2, rot / 15);
-    }
-
-    else {
-      if (actorList.size() > 1) {
-        return new Action(-speed / 2, 10);
-      } else {
-        if (actorList.get(0).getRelativeRotationToObject() > 0) {
-          return new Action(speed / 2, -20);
-        } else {
-          return new Action(speed / 2, 20);
-        }
-
-      }
-    }
   }
 
   public String getId() {
