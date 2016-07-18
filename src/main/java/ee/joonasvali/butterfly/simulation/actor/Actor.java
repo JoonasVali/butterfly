@@ -44,9 +44,7 @@ public class Actor extends Physical {
         }
       }
       if (nearest == null) {
-        if ((getX() + getY() + getRotation()) % 2 == 0) {
-          return new Action(speed / 2, 3);
-        }
+//        System.out.println(speed / 2 + " a " + -3);
         return new Action(speed / 2, -3);
       }
       double rot = nearest.getRelativeRotationToObject();
@@ -54,6 +52,7 @@ public class Actor extends Physical {
         return new Action(speed, 0);
       }
 
+//      System.out.println(speed / 2 + " b " + rot / 15);
       return new Action(speed / 2, rot / 15);
     }
 
@@ -69,7 +68,6 @@ public class Actor extends Physical {
 
       }
     }
-
   }
 
   public String getId() {

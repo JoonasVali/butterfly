@@ -31,7 +31,10 @@ public class VisibleObject {
     double y = observer.getY() + observer.getDiameter() / 2;
     double deltaY = omidY - y;
     double deltaX = omidX - x;
-    return Math.toDegrees(Math.atan2(deltaY, deltaX)) - rotationOffset;
+    double result = Math.toDegrees(Math.atan2(deltaY, deltaX)) - rotationOffset;
+    while (result < -180) result += 360;
+    while (result > 180) result -= 360;
+    return result;
   }
 
   public VisibleObject(double relativeRotationToObject, double distance, double diameter) {
