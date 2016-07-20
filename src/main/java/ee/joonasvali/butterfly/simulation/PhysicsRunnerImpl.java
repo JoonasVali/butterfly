@@ -3,7 +3,6 @@ package ee.joonasvali.butterfly.simulation;
 import ee.joonasvali.butterfly.simulation.actor.Action;
 import ee.joonasvali.butterfly.simulation.actor.Actor;
 import ee.joonasvali.butterfly.simulation.actor.vision.ActorVisionHelper;
-import ee.joonasvali.butterfly.simulation.actor.demo.PlayerActor;
 import ee.joonasvali.butterfly.simulation.actor.vision.VisibleActor;
 import ee.joonasvali.butterfly.simulation.actor.vision.VisibleFood;
 
@@ -203,11 +202,7 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
 
 
     if (health > 0) {
-      if (actor instanceof PlayerActor) {
-        return Optional.of(new PlayerActor(x, y, diameter, rotation, xImpulse, yImpulse, rotationImpulse, health, speed));
-      } else {
-        return Optional.of(new Actor(actor.getId(), x, y, diameter, rotation, xImpulse, yImpulse, rotationImpulse, health, speed));
-      }
+      return Optional.of(new Actor(actor.getId(), x, y, diameter, rotation, xImpulse, yImpulse, rotationImpulse, health, speed));
     } else {
       return Optional.empty();
     }

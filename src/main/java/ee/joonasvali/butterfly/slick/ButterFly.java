@@ -1,13 +1,13 @@
 package ee.joonasvali.butterfly.slick;
 
 import ee.joonasvali.butterfly.config.ButterFlyConfig;
+import ee.joonasvali.butterfly.player.SimulationPlayer;
 import ee.joonasvali.butterfly.simulation.Food;
 import ee.joonasvali.butterfly.simulation.actor.Actor;
 import ee.joonasvali.butterfly.simulation.PhysicsRunner;
 import ee.joonasvali.butterfly.simulation.SimulationContainer;
 import ee.joonasvali.butterfly.simulation.SimulationState;
 import ee.joonasvali.butterfly.simulation.actor.vision.ActorVisionHelper;
-import ee.joonasvali.butterfly.simulation.actor.demo.PlayerActor;
 import ee.joonasvali.butterfly.ui.SimulationPainterImpl;
 import ee.joonasvali.butterfly.ui.UI;
 import org.newdawn.slick.BasicGame;
@@ -24,7 +24,11 @@ import java.util.ArrayList;
  * Demo class to start up the slick, replace it with what ever you need.
  */
 public class ButterFly extends BasicGame {
+  public static final int CLOCK_FASTEST = 10;
+  public static final int CLOCK_FAST = 30;
   public static final int CLOCK = 50;
+
+  public static final int TOTAL_FRAMES_IN_SIMULATION = 1000;
 
   private final int simulationSizeMultiplier;
   private final int actorsInSimulation;
@@ -35,7 +39,10 @@ public class ButterFly extends BasicGame {
   private final PhysicsRunner runner;
   private final ActorVisionHelper visionHelper;
 
-  private SimulationContainer container;
+  private volatile SimulationContainer container;
+  private volatile SimulationPlayer player;
+  private volatile int simulationFrame;
+  private volatile int clock = CLOCK;
 
 
   private final static Logger log = LoggerFactory.getLogger(ButterFly.class);
@@ -58,7 +65,7 @@ public class ButterFly extends BasicGame {
     int width = config.getWindowResolutionWidth();
     int simWidth = simulationSizeMultiplier * width;
     int simHeight = simulationSizeMultiplier * height;
-    container = new SimulationContainer(
+    this.container = new SimulationContainer(
         runner,
         createInitialState(simWidth, simHeight),
         new SimulationPainterImpl(simWidth, simHeight, config.getActorDiameter(), config.getFoodDiameter(), visionHelper),
@@ -66,6 +73,8 @@ public class ButterFly extends BasicGame {
         simHeight
     );
 
+    this.player = new SimulationPlayer(this.container, TOTAL_FRAMES_IN_SIMULATION);
+    this.player.calculateSimulation();
   }
 
   private SimulationState createInitialState(int simWidth, int simHeight) {
@@ -100,14 +109,13 @@ public class ButterFly extends BasicGame {
     if (shutdown) {
       gameContainer.exit();
     }
+
     timeInGame += i;
-    while (timeInGame >= CLOCK) {
-      timeInGame -= CLOCK;
-      container.nextState();
-    }
-    PlayerActor playerActor = container.getActor();
-    if (playerActor != null) {
-      playerActor.setMove(thrust, rotate);
+    while (timeInGame >= clock) {
+      timeInGame -= clock;
+      if (simulationFrame < TOTAL_FRAMES_IN_SIMULATION - 1) {
+        simulationFrame++;
+      }
     }
 
   }
@@ -116,8 +124,8 @@ public class ButterFly extends BasicGame {
   public void render(GameContainer gameContainer, Graphics graphics) throws SlickException {
     graphics.drawString("Hello world!", 10, 20);
     ui.drawUI(graphics);
-    ui.drawSimulation(container.getPainter(), container.getState());
-    ui.drawUITop(graphics, container.getTotalFrames());
+    ui.drawSimulation(container.getPainter(), container.getState(simulationFrame));
+    ui.drawUITop(graphics, simulationFrame);
     graphics.flush();
   }
 
@@ -127,16 +135,6 @@ public class ButterFly extends BasicGame {
 
   @Override
   public void keyPressed(int key, char c) {
-    if (Input.KEY_D == key) {
-      rotate = 2;
-    } else if (Input.KEY_A == key) {
-      rotate = -2;
-    }
-    if (Input.KEY_W == key) {
-      thrust = 2;
-    } else if (Input.KEY_S == key) {
-      thrust = -2;
-    }
     if (Input.KEY_SPACE == key) {
       container.reset();
     }
@@ -145,12 +143,19 @@ public class ButterFly extends BasicGame {
   @Override
   public void keyReleased(int key, char c) {
     log.info("keycode: " + key + " pressed ");
-    if (key == Input.KEY_D || key == Input.KEY_A) {
-      rotate = 0;
+
+    if (key == Input.KEY_3) {
+      clock = CLOCK_FASTEST;
     }
-    if (key == Input.KEY_W || key == Input.KEY_S) {
-      thrust = 0;
+
+    if (key == Input.KEY_2) {
+      clock = CLOCK_FAST;
     }
+
+    if (key == Input.KEY_1) {
+      clock = CLOCK;
+    }
+
     if (key == Input.KEY_ESCAPE) {
       shutdown = true;
     }
@@ -161,7 +166,6 @@ public class ButterFly extends BasicGame {
     for (int i = 0; i < actorsInSimulation; i++) {
       actors.add(createRandomActor(simWidth - config.getActorDiameter(), simHeight - config.getActorDiameter()));
     }
-    actors.add(new PlayerActor(10, 10, config.getActorDiameter(), 0, 0, 0, 0, initialHealth, 3));
     return actors;
   }
 
