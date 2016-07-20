@@ -1,6 +1,9 @@
 package ee.joonasvali.butterfly.slick;
 
 import ee.joonasvali.butterfly.config.ButterFlyConfig;
+import ee.joonasvali.butterfly.player.Clock;
+import ee.joonasvali.butterfly.player.ClockImpl;
+import ee.joonasvali.butterfly.player.KeyBoardClockListener;
 import ee.joonasvali.butterfly.player.SimulationPlayer;
 import ee.joonasvali.butterfly.simulation.Food;
 import ee.joonasvali.butterfly.simulation.actor.Actor;
@@ -38,11 +41,13 @@ public class ButterFly extends BasicGame {
   private final ButterFlyConfig config;
   private final PhysicsRunner runner;
   private final ActorVisionHelper visionHelper;
+  private final Clock clock;
+  private final KeyBoardClockListener clockListener;
 
   private volatile SimulationContainer container;
   private volatile SimulationPlayer player;
-  private volatile int simulationFrame;
-  private volatile int clock = CLOCK;
+
+
 
 
   private final static Logger log = LoggerFactory.getLogger(ButterFly.class);
@@ -57,6 +62,8 @@ public class ButterFly extends BasicGame {
     simulationSizeMultiplier = config.getSimulationSizeMultiplier();
     initialHealth = config.getActorInitialHealth();
     actorsInSimulation = config.getActorsInSimulation();
+    clock = new ClockImpl(TOTAL_FRAMES_IN_SIMULATION);
+    clockListener = ((ClockImpl)clock).getListener();
   }
 
   @Override
@@ -102,36 +109,23 @@ public class ButterFly extends BasicGame {
     );
   }
 
-  public volatile long timeInGame;
-
   @Override
   public void update(GameContainer gameContainer, int i) throws SlickException {
     if (shutdown) {
       gameContainer.exit();
     }
 
-    timeInGame += i;
-    while (timeInGame >= clock) {
-      timeInGame -= clock;
-      if (simulationFrame < TOTAL_FRAMES_IN_SIMULATION - 1) {
-        simulationFrame++;
-      }
-    }
-
+    clock.passTime(i);
   }
 
   @Override
   public void render(GameContainer gameContainer, Graphics graphics) throws SlickException {
     graphics.drawString("Hello world!", 10, 20);
     ui.drawUI(graphics);
-    ui.drawSimulation(container.getPainter(), container.getState(simulationFrame));
-    ui.drawUITop(graphics, simulationFrame);
+    ui.drawSimulation(container.getPainter(), container.getState(clock.getFrameIndex()));
+    ui.drawUITop(graphics, clock.getFrameIndex());
     graphics.flush();
   }
-
-
-  volatile double thrust;
-  volatile double rotate;
 
   @Override
   public void keyPressed(int key, char c) {
@@ -144,17 +138,7 @@ public class ButterFly extends BasicGame {
   public void keyReleased(int key, char c) {
     log.info("keycode: " + key + " pressed ");
 
-    if (key == Input.KEY_3) {
-      clock = CLOCK_FASTEST;
-    }
-
-    if (key == Input.KEY_2) {
-      clock = CLOCK_FAST;
-    }
-
-    if (key == Input.KEY_1) {
-      clock = CLOCK;
-    }
+    clockListener.keyReleased(key);
 
     if (key == Input.KEY_ESCAPE) {
       shutdown = true;
