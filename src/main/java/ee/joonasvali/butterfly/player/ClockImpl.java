@@ -16,6 +16,7 @@ public class ClockImpl implements Clock {
   private volatile int currentFrame;
   private volatile int clock = CLOCK;
   public volatile long timeInGame;
+  public volatile boolean forward = true;
 
 
   public ClockImpl(int maxFrame) {
@@ -24,14 +25,23 @@ public class ClockImpl implements Clock {
       @Override
       public void keyReleased(int keycode) {
         if (keycode == Input.KEY_3) {
+          forward = true;
           clock = CLOCK_FASTEST;
         }
 
         if (keycode == Input.KEY_2) {
+          forward = true;
           clock = CLOCK_FAST;
         }
 
         if (keycode == Input.KEY_1) {
+          forward = true;
+          clock = CLOCK;
+        }
+
+        if (keycode == Input.KEY_0) {
+          timeInGame = 0;
+          forward = false;
           clock = CLOCK;
         }
       }
@@ -42,8 +52,14 @@ public class ClockImpl implements Clock {
     timeInGame += i;
     while (timeInGame >= clock) {
       timeInGame -= clock;
-      if (currentFrame < maxFrame - 1) {
-        currentFrame++;
+      if (forward) {
+        if (currentFrame < maxFrame - 1) {
+          currentFrame++;
+        }
+      } else {
+        if (currentFrame > 0) {
+          currentFrame--;
+        }
       }
     }
   }
