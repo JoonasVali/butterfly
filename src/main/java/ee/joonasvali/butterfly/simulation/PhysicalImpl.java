@@ -6,7 +6,7 @@ import ee.joonasvali.butterfly.code.Immutable;
  * @author Joonas Vali July 2016
  */
 @Immutable
-public class Physical {
+public class PhysicalImpl implements Physical {
   private final double x;
   private final double y;
   private final double rotation;
@@ -15,7 +15,7 @@ public class Physical {
   private final double yImpulse;
   private final int diameter;
 
-  public Physical(double x, double y, int diameter, double rotation, double xImpulse, double yImpulse, double rotationImpulse) {
+  public PhysicalImpl(double x, double y, int diameter, double rotation, double xImpulse, double yImpulse, double rotationImpulse) {
     this.x = x;
     this.y = y;
     this.diameter = diameter;

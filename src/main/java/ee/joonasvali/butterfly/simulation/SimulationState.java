@@ -4,6 +4,7 @@ import ee.joonasvali.butterfly.code.Immutable;
 import ee.joonasvali.butterfly.simulation.actor.Actor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Joonas Vali July 2016
@@ -13,11 +14,11 @@ public class SimulationState {
   private final int width;
   private final int height;
 
-  private final ArrayList<Actor> actors;
-  private final ArrayList<Food> food;
+  private final List<Actor> actors;
+  private final List<Food> food;
   private final int frameNumber;
 
-  public SimulationState(int frameNumber, ArrayList<Actor> actors, ArrayList<Food> food, int width, int height) {
+  public SimulationState(int frameNumber, List<Actor> actors, List<Food> food, int width, int height) {
     this.frameNumber = frameNumber;
     this.food = food;
     this.actors = actors;
@@ -33,11 +34,11 @@ public class SimulationState {
     return height;
   }
 
-  public ArrayList<Actor> getActors() {
+  public List<Actor> getActors() {
     return actors;
   }
 
-  public ArrayList<Food> getFood() {
+  public List<Food> getFood() {
     return food;
   }
 

@@ -1,5 +1,6 @@
 package ee.joonasvali.butterfly.simulation;
 
+import ee.joonasvali.butterfly.code.Immutable;
 import ee.joonasvali.butterfly.simulation.actor.Action;
 import ee.joonasvali.butterfly.simulation.actor.Actor;
 import ee.joonasvali.butterfly.simulation.actor.vision.ActorVisionHelper;
@@ -8,14 +9,14 @@ import ee.joonasvali.butterfly.simulation.actor.vision.VisibleFood;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author Joonas Vali July 2016
  */
+@Immutable
 public class PhysicsRunnerImpl implements PhysicsRunner {
   public static final int MAX_ROTATION_IMPULSE = 5;
   public static final double IMPULSE_DECAY = 1.1;
@@ -23,8 +24,6 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
   public static final int DIAMETER_DETECTION = 100;
   public static final int SIDEWAYS_IMPULSE_MODIFIER = 170;
   private final ActorVisionHelper visionHelper;
-  // TODO remove this.
-  private final HashMap<Actor, Double> healthToAdd = new HashMap<>();
 
   public PhysicsRunnerImpl(ActorVisionHelper visionHelper) {
     this.visionHelper = visionHelper;
@@ -32,102 +31,66 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
 
   @Override
   public SimulationState run(SimulationState original) {
-    ArrayList<Actor> actors = original.getActors();
-    ArrayList<Actor> newActors = modifyActors(actors, original.getFood(), original.getWidth(), original.getHeight());
-    ArrayList<Food> newFood = modifyFood(original.getFood(), newActors, original.getWidth(), original.getHeight());
-    return new SimulationState(original.getFrameNumber() + 1, newActors, newFood, original.getWidth(), original.getHeight());
+    List<Actor> actors = original.getActors();
+    List<ActorBuilder> actorBuilders = modifyActors(actors, original.getFood(), original.getWidth(), original.getHeight());
+    List<Food> newFood = modifyFood(original.getFood(), actorBuilders, original.getWidth(), original.getHeight());
+    List<Actor> finalActors = new ArrayList<>();
+    for (ActorBuilder ab : actorBuilders) {
+      if (ab.getHealth() > 0) {
+        finalActors.add(ab.build());
+      }
+    }
+    return new SimulationState(original.getFrameNumber() + 1, finalActors, newFood, original.getWidth(), original.getHeight());
   }
 
-  private ArrayList<Food> modifyFood(ArrayList<Food> food, ArrayList<Actor> actors, int width, int height) {
-    ArrayList<Food> result = new ArrayList<>(food);
-    ArrayList<Food> added = new ArrayList<>(food.size());
-    for (Actor actor : actors) {
+  private List<Food> modifyFood(List<Food> food, List<ActorBuilder> actors, int width, int height) {
+    List<FoodBuilder> result = food.stream().map(FoodBuilder::new).collect(Collectors.toList());
+
+    for (ActorBuilder actor : actors) {
       double x = actor.getX();
       double y = actor.getY();
       int diameter = actor.getDiameter();
-      if (!added.isEmpty()) {
-        result.addAll(added);
-        added.clear();
-      }
-      Iterator<Food> it = result.iterator();
+      Iterator<FoodBuilder> it = result.iterator();
       while (it.hasNext()) {
-        Food f = it.next();
-        double fx = f.getX();
-        double fy = f.getY();
-        double frot = f.getRotation();
-        int fdiam = f.getDiameter();
-        double points = f.getPoints();
-        double fXImp = f.getXImpulse();
-        double fYImp = f.getYImpulse();
-
-        double fRotImpulse = f.getRotationImpulse();
+        FoodBuilder f = it.next();
 
         double midX = x + diameter / 2;
         double midY = y + diameter / 2;
 
-        double fmidX = f.getX() + (double) fdiam / 2;
-        double fmidY = f.getY() + (double) fdiam / 2;
+        double fmidX = f.getX() + (double) f.getDiameter() / 2;
+        double fmidY = f.getY() + (double) f.getDiameter() / 2;
 
         if (isInRadius(f, x, y, diameter)) {
-          Double health = healthToAdd.get(actor);
-          if (health == null) {
-            healthToAdd.put(actor, f.getPoints());
-          } else {
-            healthToAdd.put(actor, f.getPoints() + health);
-          }
+          actor.setHealth((int) (actor.getHealth() + Math.round(f.getPoints())));
           it.remove();
-          continue;
         } else if (isInRadius(f, x - DIAMETER_DETECTION / 2, y - DIAMETER_DETECTION / 2, diameter + DIAMETER_DETECTION)) {
           // If food close to actor, but not in radius.
-          double impulse = getImpulseVector(actor);
-          fXImp += (fmidX - midX) / (SIDEWAYS_IMPULSE_MODIFIER - Math.abs(actor.getYImpulse() /* Y on purpose */));
-          fYImp += (fmidY - midY) / (SIDEWAYS_IMPULSE_MODIFIER - Math.abs(actor.getXImpulse() /* X on purpose */));
+          f.setXImpulse(f.getXImpulse() + (fmidX - midX) / (SIDEWAYS_IMPULSE_MODIFIER - Math.abs(actor.getYImpulse() /* Y on purpose */)));
+          f.setYImpulse(f.getYImpulse() + (fmidY - midY) / (SIDEWAYS_IMPULSE_MODIFIER - Math.abs(actor.getXImpulse() /* X on purpose */)));
         }
-
-        Food newFood = new Food(fx, fy, fdiam, frot, fXImp, fYImp, fRotImpulse, points);
-        it.remove();
-        added.add(newFood);
       }
     }
 
-    result.addAll(added);
-    added.clear();
-
     // Make the actual movement
-    for (Food f : result) {
-      double fx = f.getX();
-      double fy = f.getY();
-      double frot = f.getRotation();
-      int fdiam = f.getDiameter();
-      double points = f.getPoints();
-      double fXImp = f.getXImpulse();
-      double fYImp = f.getYImpulse();
+    for (FoodBuilder f : result) {
+      f.setX(f.getX() + f.getXImpulse());
+      f.setY(f.getY() + f.getYImpulse());
 
-      double fRotImpulse = f.getRotationImpulse();
+      /*
+        Limit world boundaries
+      */
+      f.setX(Math.min(Math.max(0, f.getX()), width - f.getDiameter()));
+      f.setY(Math.min(Math.max(0, f.getY()), height - f.getDiameter()));
 
-      fx += fXImp;
-      fy += fYImp;
-
-          /*
-            Limit world boundaries
-          */
-      fx = Math.min(Math.max(0, fx), width - f.getDiameter());
-      fy = Math.min(Math.max(0, fy), height - f.getDiameter());
-
-      fXImp = (fx - f.getX()) / IMPULSE_DECAY;
-      fYImp = (fy - f.getY()) / IMPULSE_DECAY;
-
-      Food newFood = new Food(fx, fy, fdiam, frot, fXImp, fYImp, fRotImpulse, points);
-      added.add(newFood);
+      f.setXImpulse((f.getX() - f.getOriginal().getX()) / IMPULSE_DECAY);
+      f.setYImpulse((f.getY() - f.getOriginal().getY()) / IMPULSE_DECAY);
     }
 
-    result.clear();
-    result.addAll(added);
-    return result;
+    return result.stream().map(FoodBuilder::build).collect(Collectors.toList());
   }
 
-  private double getImpulseVector(Physical p) {
-    return Math.sqrt(Math.pow(p.getXImpulse(), 2) + Math.pow(p.getYImpulse(), 2));
+  private double getImpulseVector(double xImpulse, double yImpulse) {
+    return Math.sqrt(Math.pow(xImpulse, 2) + Math.pow(yImpulse, 2));
   }
 
   private boolean isInRadius(Physical f, double x, double y, int diameter) {
@@ -144,69 +107,51 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
 
   }
 
-  private ArrayList<Actor> modifyActors(List<Actor> actors, List<Food> food, int width, int height) {
-    ArrayList<Actor> newActors = new ArrayList<>(actors.size());
+  private ArrayList<ActorBuilder> modifyActors(List<Actor> actors, List<Food> food, int width, int height) {
+    ArrayList<ActorBuilder> newActors = new ArrayList<>(actors.size());
     for (Actor actor : actors) {
-      act(actor, actors, food, width, height).ifPresent(newActors::add);
+      newActors.add(act(actor, actors, food, width, height));
     }
-    healthToAdd.clear();
     return newActors;
   }
 
-  private Optional<Actor> act(Actor actor, List<Actor> actors, List<Food> foods, int width, int height) {
-    double rotation = actor.getRotation();
-    int health = actor.getHealth() - HEALTH_DECAY;
-    double x = actor.getX();
-    double y = actor.getY();
-    int diameter = actor.getDiameter();
-    double rotationImpulse = actor.getRotationImpulse();
-    double xImpulse = actor.getXImpulse();
-    double yImpulse = actor.getYImpulse();
-    double speed = actor.getSpeed();
-
-    Double healthToAdd = this.healthToAdd.get(actor);
-    if (healthToAdd != null) {
-      health += healthToAdd;
-    }
+  private ActorBuilder act(Actor actor, List<Actor> actors, List<Food> foods, int width, int height) {
+    ActorBuilder builder = new ActorBuilder(actor);
+    builder.setHealth(builder.getHealth() - HEALTH_DECAY);
 
     List<VisibleActor> visibleActors = getVisibleActors(actor, actors);
     List<VisibleFood> visibleFoods = getVisibleFoods(actor, foods);
 
     Action action = actor.move(visibleActors, visibleFoods);
 
-    rotationImpulse += action.getRotation();
-    rotationImpulse = Math.min(rotationImpulse, MAX_ROTATION_IMPULSE);
-    rotationImpulse = Math.max(rotationImpulse, -MAX_ROTATION_IMPULSE);
+    builder.setRotationImpulse(builder.getRotationImpulse() + action.getRotation());
+    builder.setRotationImpulse(Math.min(builder.getRotationImpulse(), MAX_ROTATION_IMPULSE));
+    builder.setRotationImpulse(Math.max(builder.getRotationImpulse(), -MAX_ROTATION_IMPULSE));
 
     double thrust = action.getThrust();
 
-    rotation += rotationImpulse;
-    rotationImpulse = (rotation - actor.getRotation()) / IMPULSE_DECAY;
+    builder.setRotation(builder.getRotation() + builder.getRotationImpulse());
+    builder.setRotationImpulse((builder.getRotation() - actor.getRotation()) / IMPULSE_DECAY);
 
     double yMovement;
     double xMovement;
 
-    xMovement = thrust * Math.cos(Math.toRadians(rotation));
-    yMovement = thrust * Math.sin(Math.toRadians(rotation));
+    xMovement = thrust * Math.cos(Math.toRadians(builder.getRotation()));
+    yMovement = thrust * Math.sin(Math.toRadians(builder.getRotation()));
 
-    x += xMovement + xImpulse;
-    y += yMovement + yImpulse;
+    builder.setX(builder.getX() + xMovement + builder.getXImpulse());
+    builder.setY(builder.getY() + yMovement + builder.getYImpulse());
 
     /*
       Limit world boundaries
      */
-    x = Math.min(Math.max(0, x), width - actor.getDiameter());
-    y = Math.min(Math.max(0, y), height - actor.getDiameter());
+    builder.setX(Math.min(Math.max(0, builder.getX()), width - actor.getDiameter()));
+    builder.setY(Math.min(Math.max(0, builder.getY()), height - actor.getDiameter()));
 
-    xImpulse = (x - actor.getX()) / IMPULSE_DECAY;
-    yImpulse = (y - actor.getY()) / IMPULSE_DECAY;
+    builder.setXImpulse((builder.getX() - actor.getX()) / IMPULSE_DECAY);
+    builder.setYImpulse((builder.getY() - actor.getY()) / IMPULSE_DECAY);
 
-
-    if (health > 0) {
-      return Optional.of(new Actor(actor.getId(), x, y, diameter, rotation, xImpulse, yImpulse, rotationImpulse, health, speed));
-    } else {
-      return Optional.empty();
-    }
+    return builder;
   }
 
   private List<VisibleFood> getVisibleFoods(Actor actor, List<Food> foods) {

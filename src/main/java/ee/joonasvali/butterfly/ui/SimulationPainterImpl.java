@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Joonas Vali July 2016
@@ -89,7 +90,7 @@ public class SimulationPainterImpl implements SimulationPainter {
     return image;
   }
 
-  private void drawFood(Graphics g, ArrayList<Food> food) {
+  private void drawFood(Graphics g, List<Food> food) {
     g.setColor(Color.orange);
     for (Food f : food) {
       this.food.setRotation((float) (f.getRotation() + 90));
@@ -97,7 +98,7 @@ public class SimulationPainterImpl implements SimulationPainter {
     }
   }
 
-  private void drawActors(Graphics g, ArrayList<Actor> actors) {
+  private void drawActors(Graphics g, List<Actor> actors) {
     for (Actor actor : actors) {
       if (actor.getHealth() > 800) {
         this.actorOk.setRotation((float) actor.getRotation() + 90);
