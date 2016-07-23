@@ -29,10 +29,6 @@ import java.util.ArrayList;
  * Demo class to start up the slick, replace it with what ever you need.
  */
 public class ButterFly extends BasicGame {
-  public static final int CLOCK_FASTEST = 10;
-  public static final int CLOCK_FAST = 30;
-  public static final int CLOCK = 50;
-
   public static final int TOTAL_FRAMES_IN_SIMULATION = 1000;
 
   private final int simulationSizeMultiplier;

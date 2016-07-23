@@ -1,8 +1,11 @@
 package ee.joonasvali.butterfly.simulation;
 
+import ee.joonasvali.butterfly.code.Immutable;
+
 /**
  * @author Joonas Vali July 2016
  */
+@Immutable
 public class Physical {
   private final double x;
   private final double y;

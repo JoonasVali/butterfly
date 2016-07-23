@@ -1,11 +1,13 @@
 package ee.joonasvali.butterfly.simulation.actor.vision;
 
+import ee.joonasvali.butterfly.code.Immutable;
 import ee.joonasvali.butterfly.simulation.Physical;
 import ee.joonasvali.butterfly.simulation.actor.Actor;
 
 /**
  * @author Joonas Vali July 2016
  */
+@Immutable
 public class VisibleObject {
   private final double relativeRotationToObject;
   private final double distance;

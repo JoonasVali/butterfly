@@ -23,6 +23,7 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
   public static final int DIAMETER_DETECTION = 100;
   public static final int SIDEWAYS_IMPULSE_MODIFIER = 170;
   private final ActorVisionHelper visionHelper;
+  // TODO remove this.
   private final HashMap<Actor, Double> healthToAdd = new HashMap<>();
 
   public PhysicsRunnerImpl(ActorVisionHelper visionHelper) {

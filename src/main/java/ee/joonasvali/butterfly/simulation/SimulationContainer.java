@@ -1,6 +1,5 @@
 package ee.joonasvali.butterfly.simulation;
 
-import ee.joonasvali.butterfly.simulation.actor.Actor;
 import ee.joonasvali.butterfly.ui.SimulationPainter;
 
 import java.util.ArrayList;
@@ -56,10 +55,13 @@ public class SimulationContainer {
       states.clear();
       states.add(s);
     }
-
   }
 
   public SimulationState getState(int frame) {
     return states.get(frame);
+  }
+
+  public SimulationContainer copy() {
+    return new SimulationContainer(runner, states.get(0), painter, getWidth(), getHeight());
   }
 }

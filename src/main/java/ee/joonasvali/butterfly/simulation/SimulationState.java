@@ -1,5 +1,6 @@
 package ee.joonasvali.butterfly.simulation;
 
+import ee.joonasvali.butterfly.code.Immutable;
 import ee.joonasvali.butterfly.simulation.actor.Actor;
 
 import java.util.ArrayList;
@@ -7,6 +8,7 @@ import java.util.ArrayList;
 /**
  * @author Joonas Vali July 2016
  */
+@Immutable
 public class SimulationState {
   private final int width;
   private final int height;

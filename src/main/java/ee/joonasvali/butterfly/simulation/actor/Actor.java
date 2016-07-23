@@ -1,5 +1,6 @@
 package ee.joonasvali.butterfly.simulation.actor;
 
+import ee.joonasvali.butterfly.code.Immutable;
 import ee.joonasvali.butterfly.simulation.Physical;
 import ee.joonasvali.butterfly.simulation.actor.vision.VisibleActor;
 import ee.joonasvali.butterfly.simulation.actor.vision.VisibleFood;
@@ -9,6 +10,7 @@ import java.util.List;
 /**
  * @author Joonas Vali July 2016
  */
+@Immutable
 public class Actor extends Physical {
   private final int health;
   private final double speed;
