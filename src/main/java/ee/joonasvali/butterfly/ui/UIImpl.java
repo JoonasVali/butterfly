@@ -30,16 +30,12 @@ public class UIImpl implements UI {
   }
 
   @Override
-  public void drawUI(Graphics g, SimulationPlayer player) {
+  public void drawUI(Graphics g, SimulationPlayer player, SimulationPlayerPainter painter) {
     g.setColor(Color.orange);
     g.drawRect(10, 10, config.getWindowResolutionWidth() - 20, config.getWindowResolutionHeight() - 20);
     g.drawLine(10, config.getWindowResolutionHeight() - 100, config.getWindowResolutionWidth() - 10, config.getWindowResolutionHeight() - 100);
-    drawPlayer(player);
-  }
-
-  private void drawPlayer(SimulationPlayer player) {
-    int frames = player.getTotalFrames();
-    
+    Image image = painter.getPlayerImage(player);
+    image.draw(10, config.getWindowResolutionHeight() - 90);
   }
 
   @Override

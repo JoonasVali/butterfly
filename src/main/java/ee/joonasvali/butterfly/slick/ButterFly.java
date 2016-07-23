@@ -12,6 +12,8 @@ import ee.joonasvali.butterfly.simulation.SimulationContainer;
 import ee.joonasvali.butterfly.simulation.SimulationState;
 import ee.joonasvali.butterfly.simulation.actor.vision.ActorVisionHelper;
 import ee.joonasvali.butterfly.ui.SimulationPainterImpl;
+import ee.joonasvali.butterfly.ui.SimulationPlayerPainter;
+import ee.joonasvali.butterfly.ui.SimulationPlayerPainterImpl;
 import ee.joonasvali.butterfly.ui.UI;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
@@ -46,6 +48,7 @@ public class ButterFly extends BasicGame {
 
   private volatile SimulationContainer container;
   private volatile SimulationPlayer player;
+  private volatile SimulationPlayerPainter playerPainter;
 
 
 
@@ -82,6 +85,7 @@ public class ButterFly extends BasicGame {
 
     this.player = new SimulationPlayer(this.container, TOTAL_FRAMES_IN_SIMULATION, clock);
     this.player.calculateSimulation();
+    this.playerPainter = new SimulationPlayerPainterImpl(config.getWindowResolutionWidth(), config.getWindowResolutionHeight());
   }
 
   private SimulationState createInitialState(int simWidth, int simHeight) {
@@ -121,7 +125,7 @@ public class ButterFly extends BasicGame {
   @Override
   public void render(GameContainer gameContainer, Graphics graphics) throws SlickException {
     graphics.drawString("Hello world!", 10, 20);
-    ui.drawUI(graphics, player);
+    ui.drawUI(graphics, player, playerPainter);
     ui.drawSimulation(container.getPainter(), player.getState());
     ui.drawUITop(graphics, player.getCurrentFrame());
     graphics.flush();
