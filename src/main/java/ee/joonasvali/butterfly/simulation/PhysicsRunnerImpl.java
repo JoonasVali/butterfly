@@ -253,16 +253,6 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
 
   /**
    * function taken from http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-2d-triangle
-   *
-   * @param x
-   * @param y
-   * @param ax
-   * @param ay
-   * @param bx
-   * @param by
-   * @param cx
-   * @param cy
-   * @return
    */
   private boolean isPointInTriangle(int x, int y, int ax, int ay, int bx, int by, int cx, int cy) {
     int as_x = x - ax;

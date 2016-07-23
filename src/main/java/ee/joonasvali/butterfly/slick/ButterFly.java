@@ -80,7 +80,7 @@ public class ButterFly extends BasicGame {
         simHeight
     );
 
-    this.player = new SimulationPlayer(this.container, TOTAL_FRAMES_IN_SIMULATION);
+    this.player = new SimulationPlayer(this.container, TOTAL_FRAMES_IN_SIMULATION, clock);
     this.player.calculateSimulation();
   }
 
@@ -115,23 +115,21 @@ public class ButterFly extends BasicGame {
       gameContainer.exit();
     }
 
-    clock.passTime(i);
+    player.passTime(i);
   }
 
   @Override
   public void render(GameContainer gameContainer, Graphics graphics) throws SlickException {
     graphics.drawString("Hello world!", 10, 20);
-    ui.drawUI(graphics);
-    ui.drawSimulation(container.getPainter(), container.getState(clock.getFrameIndex()));
-    ui.drawUITop(graphics, clock.getFrameIndex());
+    ui.drawUI(graphics, player);
+    ui.drawSimulation(container.getPainter(), player.getState());
+    ui.drawUITop(graphics, player.getCurrentFrame());
     graphics.flush();
   }
 
   @Override
   public void keyPressed(int key, char c) {
-    if (Input.KEY_SPACE == key) {
-      container.reset();
-    }
+
   }
 
   @Override
@@ -169,8 +167,8 @@ public class ButterFly extends BasicGame {
   }
 
   public String getRandomId() {
-    String[] firstNames = {"JAMES", "JOHN", "ROBERT", "MICHAEL", "WILLIAM", "DAVID", "RICHARD", "CHARLES", "JOSEPH"};
-    String[] lastNames = {"GATES", "DOE", "HOLMES", "PARK", "SEAGULL", "BEAR", "TARGARYEN", "SNOW", "LANNISTER", "SMITH", "STARK"};
+    String[] firstNames = {"JAMES", "JOHN", "ROBERT", "MICHAEL", "WILLIAM", "DAVID", "RICHARD", "CHARLES", "JOSEPH", "JOFFREY"};
+    String[] lastNames = {"GATES", "DOE", "HOLMES", "PARK", "SEAGULL", "BEAR", "TARGARYEN", "SNOW", "LANNISTER", "SMITH", "STARK", "BARATHEON"};
     return firstNames[((int) (Math.random() * firstNames.length))] + " " + lastNames[((int) (Math.random() * lastNames.length))];
   }
 

@@ -15,8 +15,8 @@ public class ClockImpl implements Clock {
 
   private volatile int currentFrame;
   private volatile int clock = CLOCK;
-  public volatile long timeInGame;
-  public volatile boolean forward = true;
+  private volatile long timeInGame;
+  private volatile boolean forward = true;
 
 
   public ClockImpl(int maxFrame) {

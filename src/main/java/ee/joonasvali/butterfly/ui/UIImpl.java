@@ -1,6 +1,7 @@
 package ee.joonasvali.butterfly.ui;
 
 import ee.joonasvali.butterfly.config.ButterFlyConfig;
+import ee.joonasvali.butterfly.player.SimulationPlayer;
 import ee.joonasvali.butterfly.simulation.SimulationState;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
@@ -29,10 +30,16 @@ public class UIImpl implements UI {
   }
 
   @Override
-  public void drawUI(Graphics g) {
+  public void drawUI(Graphics g, SimulationPlayer player) {
     g.setColor(Color.orange);
     g.drawRect(10, 10, config.getWindowResolutionWidth() - 20, config.getWindowResolutionHeight() - 20);
     g.drawLine(10, config.getWindowResolutionHeight() - 100, config.getWindowResolutionWidth() - 10, config.getWindowResolutionHeight() - 100);
+    drawPlayer(player);
+  }
+
+  private void drawPlayer(SimulationPlayer player) {
+    int frames = player.getTotalFrames();
+    
   }
 
   @Override
