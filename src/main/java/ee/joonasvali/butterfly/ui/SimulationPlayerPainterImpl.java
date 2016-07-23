@@ -21,10 +21,16 @@ public class SimulationPlayerPainterImpl implements SimulationPlayerPainter {
 
   @Override
   public Image getPlayerImage(SimulationPlayer player) {
-    /* TODO */
+    int frames = player.getTotalFrames();
+
     g.clear();
+    g.setColor(Color.gray);
+    g.drawRect(10, 10, image.getWidth() - 20, image.getHeight() - 20);
+    g.setColor(Color.red);
+    int breakPoint = player.getCurrentFrame();
+    g.drawLine(15, 15, 15 + breakPoint, 15);
     g.setColor(Color.white);
-    g.drawLine(0, 0, 10, 10);
+    g.drawLine(15 + breakPoint, 15, 15 + frames - 1, 15);
     g.flush();
     return image;
   }

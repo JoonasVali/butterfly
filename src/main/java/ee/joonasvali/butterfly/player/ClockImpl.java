@@ -41,8 +41,16 @@ public class ClockImpl implements Clock {
 
         if (keycode == Input.KEY_0) {
           timeInGame = 0;
+
+          if (forward) {
+            clock = CLOCK;
+          } else if (clock == CLOCK) {
+            clock = CLOCK_FAST;
+          } else if (clock == CLOCK_FAST) {
+            clock = CLOCK_FASTEST;
+          }
+
           forward = false;
-          clock = CLOCK;
         }
       }
     };
