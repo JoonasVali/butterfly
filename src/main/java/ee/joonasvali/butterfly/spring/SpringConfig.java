@@ -11,9 +11,13 @@ import ee.joonasvali.butterfly.ui.UIImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 
 @Configuration
-@PropertySource("classpath:butterfly.properties")
+@PropertySources({
+    @PropertySource("classpath:butterfly.properties"),
+    @PropertySource(value = "file:${butterfly.properties.path}", ignoreResourceNotFound = true)
+})
 public class SpringConfig {
   @Bean
   public ButterFlyConfig getConfiguration() {

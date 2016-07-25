@@ -41,5 +41,4 @@ public class Boot {
       log.error("Unable to launch Mirrors", e);
     }
   }
-
 }

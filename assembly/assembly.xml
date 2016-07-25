@@ -45,6 +45,15 @@
       <fileMode>0444</fileMode>
     </fileSet>
 
+    <fileSet>
+      <directory>${basedir}/src/main/resources</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>**/butterfly.properties</include>
+      </includes>
+      <lineEnding>windows</lineEnding>
+    </fileSet>
+
 
     <fileSet>
       <directory>${program.target}</directory>

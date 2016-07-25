@@ -89,10 +89,6 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
     return result.stream().map(FoodBuilder::build).collect(Collectors.toList());
   }
 
-  private double getImpulseVector(double xImpulse, double yImpulse) {
-    return Math.sqrt(Math.pow(xImpulse, 2) + Math.pow(yImpulse, 2));
-  }
-
   private boolean isInRadius(Physical f, double x, double y, int diameter) {
     double radius = diameter / 2;
     double midX = x + radius;
