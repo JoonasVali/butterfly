@@ -13,6 +13,7 @@ public class SimulationPlayerPainterImpl implements SimulationPlayerPainter {
 
   public static final int LINE_X = 15;
   public static final int LINE_Y = 15;
+  private static final Color LINE_WHITE = new Color(200, 200, 200);
   private final Image image;
   private final Graphics g;
 
@@ -31,9 +32,19 @@ public class SimulationPlayerPainterImpl implements SimulationPlayerPainter {
     g.drawRect(10, 10, image.getWidth() - 20, image.getHeight() - 20);
     g.setColor(Color.red);
     int breakPoint = player.getCurrentFrame();
-    g.drawLine(LINE_X, LINE_Y, 15 + breakPoint, 15);
+    g.drawLine(LINE_X, LINE_Y, 15 + breakPoint, LINE_Y);
+    g.drawLine(LINE_X, LINE_Y + 1, 15 + breakPoint, LINE_Y + 1);
+    g.setColor(LINE_WHITE);
+    g.drawLine(15 + breakPoint, LINE_Y, 15 + frames - 1, LINE_Y);
+    g.drawLine(15 + breakPoint, LINE_Y + 1, 15 + frames - 1, LINE_Y + 1);
+
     g.setColor(Color.white);
-    g.drawLine(15 + breakPoint, 15, 15 + frames - 1, 15);
+    for (int i = 0; i < 5; i++) {
+      g.drawLine(15 + breakPoint + i, 15, 15 + breakPoint + i, 20);
+    }
+
+
+
     g.flush();
     return image;
   }
