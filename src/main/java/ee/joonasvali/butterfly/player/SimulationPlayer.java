@@ -2,6 +2,7 @@ package ee.joonasvali.butterfly.player;
 
 import ee.joonasvali.butterfly.simulation.SimulationContainer;
 import ee.joonasvali.butterfly.simulation.SimulationState;
+import ee.joonasvali.butterfly.ui.MouseListener;
 
 /**
  * @author Joonas Vali July 2016
@@ -11,6 +12,7 @@ public class SimulationPlayer {
   private final SimulationContainer mainContainer;
   private final int totalFrames;
   private final Clock clock;
+  private int frameIndex;
 
   public SimulationPlayer(SimulationContainer mainContainer, int totalFrames, Clock clock) {
     this.totalFrames = totalFrames;
@@ -43,5 +45,9 @@ public class SimulationPlayer {
 
   public int getTotalFrames() {
     return totalFrames;
+  }
+
+  public void setFrameIndex(int frameIndex) {
+    clock.setFrameIndex(frameIndex);
   }
 }

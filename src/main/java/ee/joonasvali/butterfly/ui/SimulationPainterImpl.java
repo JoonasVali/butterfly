@@ -34,6 +34,8 @@ public class SimulationPainterImpl implements SimulationPainter {
   private final Graphics g;
   private final Font font;
   private final ActorVisionHelper visionHelper;
+  private int playerX;
+  private int playerY;
 
   public SimulationPainterImpl(int width, int height, int actorDiameter, int foodDiameter, ActorVisionHelper visionHelper) throws SlickException {
     this.visionHelper = visionHelper;

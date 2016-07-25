@@ -8,6 +8,12 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 
 public class UIImpl implements UI {
+  private final int playerX;
+  private final int playerY;
+  private final int playerWidth;
+  private final int playerHeight;
+
+
   private final ButterFlyConfig config;
 
   private final int simulationX;
@@ -27,6 +33,10 @@ public class UIImpl implements UI {
     this.simulationY = 10 + 1;
     this.simulationWidth = config.getWindowResolutionWidth() - (simulationX + 10) ;
     this.simulationHeight = config.getWindowResolutionHeight() - (simulationY + 100);
+    this.playerX = 10;
+    this.playerY = config.getWindowResolutionHeight() - 90;
+    this.playerWidth = config.getWindowResolutionWidth() - 100; // TODO unify. The image returned should match it.
+    this.playerHeight = 50; // TODO unify. The image returned should match it.
   }
 
   @Override
@@ -54,6 +64,49 @@ public class UIImpl implements UI {
     }
 
     i.draw(simulationX, simulationY, simulationScale);
+  }
+
+  @Override
+  public MouseDispatcher getMouseDispatcher() {
+    return new MouseDispatcher() {
+      private MouseListener player;
+      private MouseListener simulation;
+      private MouseListener settings;
+      @Override
+      public void registerMouseListener(MouseListener listener, Area area) {
+        if (!(area instanceof AreaImpl)) {
+          throw new IllegalArgumentException("Wrong Area type: " + area);
+        }
+        switch ((AreaImpl)area) {
+          case PLAYER: player = listener; break;
+          case SETTINGS: simulation = listener; break;
+          case SIMULATION: settings = listener; break;
+          default: throw new IllegalArgumentException("wrong Area type: " + area);
+        }
+      }
+
+      @Override
+      public void mouseClicked(int button, int x, int y, int clickCount) {
+        if (x > simulationX && x < simulationWidth + simulationX
+            && y > simulationY && y < simulationHeight + simulationY) {
+          if (simulation != null) {
+            simulation.mouseClicked(button, x - simulationX, y - simulationY, clickCount);
+          }
+          return;
+        }
+
+        if (x > playerX && x < playerWidth + playerX
+            && y > playerY && y < playerHeight + playerY) {
+          if (player != null) {
+            player.mouseClicked(button, x - playerX, y - playerY, clickCount);
+          }
+        }
+
+        if (settings != null) {
+          settings.mouseClicked(button, x, y, clickCount);
+        }
+      }
+    };
   }
 
   private void drawFrameCounter(Graphics g, int totalFrames) {

@@ -77,6 +77,14 @@ public class ClockImpl implements Clock {
     return currentFrame;
   }
 
+  @Override
+  public void setFrameIndex(int index) {
+    if (index < 0 || index >= maxFrame) {
+      throw new IllegalArgumentException("index " + index + " out of bounds.");
+    }
+    this.currentFrame = index;
+  }
+
   public KeyBoardClockListener getListener() {
     return listener;
   }

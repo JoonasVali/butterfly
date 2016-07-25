@@ -8,4 +8,5 @@ public interface UI {
   void drawUI(Graphics g, SimulationPlayer player, SimulationPlayerPainter painter);
   void drawUITop(Graphics g, int totalFrames);
   void drawSimulation(SimulationPainter painter, SimulationState simulationState);
+  MouseDispatcher getMouseDispatcher();
 }

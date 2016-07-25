@@ -11,12 +11,15 @@ import org.newdawn.slick.SlickException;
  */
 public class SimulationPlayerPainterImpl implements SimulationPlayerPainter {
 
+  public static final int LINE_X = 15;
+  public static final int LINE_Y = 15;
   private final Image image;
   private final Graphics g;
 
   public SimulationPlayerPainterImpl(int windowWidth, int windowHeight) throws SlickException {
     this.image = new Image(windowWidth - 100, 50);
     this.g = image.getGraphics();
+
   }
 
   @Override
@@ -28,10 +31,34 @@ public class SimulationPlayerPainterImpl implements SimulationPlayerPainter {
     g.drawRect(10, 10, image.getWidth() - 20, image.getHeight() - 20);
     g.setColor(Color.red);
     int breakPoint = player.getCurrentFrame();
-    g.drawLine(15, 15, 15 + breakPoint, 15);
+    g.drawLine(LINE_X, LINE_Y, 15 + breakPoint, 15);
     g.setColor(Color.white);
     g.drawLine(15 + breakPoint, 15, 15 + frames - 1, 15);
     g.flush();
     return image;
   }
+
+
+  public MouseListener createMouseListener(SimulationPlayer player) {
+    return new PlayerListener(player);
+  }
+
+  private class PlayerListener implements MouseListener {
+    private final SimulationPlayer player;
+
+    public PlayerListener(SimulationPlayer player) {
+      this.player = player;
+    }
+
+    @Override
+    public void mouseClicked(int button, int x, int y, int clickCount) {
+      x = x - LINE_X;
+      y = y - LINE_Y;
+      if (x < player.getTotalFrames() && x >= 0) {
+        player.setFrameIndex(x);
+      }
+      System.out.println(button + " " + x + " " + y);
+    }
+  }
+
 }

@@ -11,6 +11,8 @@ import ee.joonasvali.butterfly.simulation.PhysicsRunner;
 import ee.joonasvali.butterfly.simulation.SimulationContainer;
 import ee.joonasvali.butterfly.simulation.SimulationState;
 import ee.joonasvali.butterfly.simulation.actor.vision.ActorVisionHelper;
+import ee.joonasvali.butterfly.ui.MouseDispatcher;
+import ee.joonasvali.butterfly.ui.MouseListener;
 import ee.joonasvali.butterfly.ui.SimulationPainterImpl;
 import ee.joonasvali.butterfly.ui.SimulationPlayerPainter;
 import ee.joonasvali.butterfly.ui.SimulationPlayerPainterImpl;
@@ -24,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Demo class to start up the slick, replace it with what ever you need.
@@ -46,7 +49,7 @@ public class ButterFly extends BasicGame {
   private volatile SimulationPlayer player;
   private volatile SimulationPlayerPainter playerPainter;
 
-
+  private final List<MouseListener> mouseListenerList = new ArrayList<>();
 
 
   private final static Logger log = LoggerFactory.getLogger(ButterFly.class);
@@ -71,10 +74,11 @@ public class ButterFly extends BasicGame {
     int width = config.getWindowResolutionWidth();
     int simWidth = simulationSizeMultiplier * width;
     int simHeight = simulationSizeMultiplier * height;
+    SimulationPainterImpl painter = new SimulationPainterImpl(simWidth, simHeight, config.getActorDiameter(), config.getFoodDiameter(), visionHelper);
     this.container = new SimulationContainer(
         runner,
         createInitialState(simWidth, simHeight),
-        new SimulationPainterImpl(simWidth, simHeight, config.getActorDiameter(), config.getFoodDiameter(), visionHelper),
+        painter,
         simWidth,
         simHeight
     );
@@ -82,6 +86,10 @@ public class ButterFly extends BasicGame {
     this.player = new SimulationPlayer(this.container, TOTAL_FRAMES_IN_SIMULATION, clock);
     this.player.calculateSimulation();
     this.playerPainter = new SimulationPlayerPainterImpl(config.getWindowResolutionWidth(), config.getWindowResolutionHeight());
+
+    MouseDispatcher dispatcher = this.ui.getMouseDispatcher();
+    dispatcher.registerMouseListener(((SimulationPlayerPainterImpl)playerPainter).createMouseListener(player), MouseDispatcher.AreaImpl.PLAYER);
+    mouseListenerList.add(dispatcher);
   }
 
   private SimulationState createInitialState(int simWidth, int simHeight) {
@@ -125,6 +133,11 @@ public class ButterFly extends BasicGame {
     ui.drawSimulation(container.getPainter(), player.getState());
     ui.drawUITop(graphics, player.getCurrentFrame());
     graphics.flush();
+  }
+
+  @Override
+  public void mouseClicked(int button, int x, int y, int clickCount) {
+    mouseListenerList.forEach(ml -> ml.mouseClicked(button, x, y, clickCount));
   }
 
   @Override
