@@ -46,16 +46,6 @@
     </fileSet>
 
     <fileSet>
-      <directory>${basedir}/src/main/resources</directory>
-      <outputDirectory>/</outputDirectory>
-      <includes>
-        <include>**/butterfly.properties</include>
-      </includes>
-      <lineEnding>windows</lineEnding>
-    </fileSet>
-
-
-    <fileSet>
       <directory>${program.target}</directory>
       <outputDirectory>lib</outputDirectory>
       <includes>
@@ -70,6 +60,23 @@
         <include>**/*</include>
       </includes>
     </fileSet>
-
   </fileSets>
+
+  <files>
+    <file>
+      <source>${basedir}/src/main/resources/butterfly.properties</source>
+      <outputDirectory>/</outputDirectory>
+      <destName>butterfly-win.properties</destName>
+      <lineEnding>windows</lineEnding>
+    </file>
+
+    <file>
+      <source>${basedir}/src/main/resources/butterfly.properties</source>
+      <outputDirectory>/</outputDirectory>
+      <destName>butterfly-unix.properties</destName>
+      <lineEnding>unix</lineEnding>
+      <fileMode>0444</fileMode>
+    </file>
+  </files>
+  
 </assembly>
