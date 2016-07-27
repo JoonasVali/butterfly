@@ -85,7 +85,7 @@ public class ButterFly extends BasicGame {
     );
 
     this.player = new SimulationPlayer(
-        new SimulationContainer[]{this.container, this.container.copy()}, // Currently two tracks supported
+        new SimulationContainer[]{this.container, this.container.copyTemp()}, // Currently two tracks supported
         TOTAL_FRAMES_IN_SIMULATION, clock
     );
 

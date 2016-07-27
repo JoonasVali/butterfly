@@ -1,5 +1,6 @@
 package ee.joonasvali.butterfly.simulation;
 
+import ee.joonasvali.butterfly.MutationUtil;
 import ee.joonasvali.butterfly.ui.SimulationPainter;
 
 import java.util.ArrayList;
@@ -64,4 +65,10 @@ public class SimulationContainer {
   public SimulationContainer copy() {
     return new SimulationContainer(runner, states.get(0), painter, getWidth(), getHeight());
   }
+
+  /* TODO remove */
+  public SimulationContainer copyTemp() {
+    return new SimulationContainer(runner, MutationUtil.mutate(states.get(0)), painter, getWidth(), getHeight());
+  }
+
 }
