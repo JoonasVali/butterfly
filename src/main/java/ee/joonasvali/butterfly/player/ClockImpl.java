@@ -43,6 +43,8 @@ public class ClockImpl implements Clock {
           timeInGame = 0;
 
           if (forward) {
+            clock = 0;
+          } else if (clock == 0) {
             clock = CLOCK;
           } else if (clock == CLOCK) {
             clock = CLOCK_FAST;
@@ -57,6 +59,10 @@ public class ClockImpl implements Clock {
   }
 
   public void passTime(int i) {
+    if (clock == 0) {
+      // pause
+      return;
+    }
     timeInGame += i;
     while (timeInGame >= clock) {
       timeInGame -= clock;

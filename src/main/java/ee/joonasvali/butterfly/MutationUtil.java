@@ -13,8 +13,8 @@ import java.util.List;
 public class MutationUtil {
 
   public static SimulationState mutate(SimulationState simulationState) {
-    List<Actor> actorList = removeOne(simulationState.getActors());
-    List<Food> foodList = simulationState.getFood();
+    List<Actor> actorList = simulationState.getActors();
+    List<Food> foodList = removeOneFood(simulationState.getFood());
     int w = simulationState.getWidth();
     int h = simulationState.getHeight();
     return new SimulationState(simulationState.getFrameNumber(), actorList, foodList, w, h);
@@ -23,6 +23,13 @@ public class MutationUtil {
   private static List<Actor> removeOne(List<Actor> actors) {
     List<Actor> n = new ArrayList<>(actors);
     n.remove((int)(Math.random() * n.size()));
+    return n;
+  }
+
+  private static List<Food> removeOneFood(List<Food> food) {
+    List<Food> n = new ArrayList<>(food);
+    for (int i = 0; i < 5 ; i++)
+      n.remove((int)(Math.random() * n.size()));
     return n;
   }
 }
