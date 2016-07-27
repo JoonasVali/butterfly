@@ -9,30 +9,42 @@ import ee.joonasvali.butterfly.ui.MouseListener;
  */
 public class SimulationPlayer {
 
-  private final SimulationContainer mainContainer;
+  private final SimulationContainer[] tracks;
   private final int totalFrames;
   private final Clock clock;
   private int frameIndex;
+  private int track;
 
-  public SimulationPlayer(SimulationContainer mainContainer, int totalFrames, Clock clock) {
+  public SimulationPlayer(SimulationContainer[] containers, int totalFrames, Clock clock) {
     this.totalFrames = totalFrames;
-    this.mainContainer = mainContainer;
+    this.tracks = containers;
     this.clock = clock;
+    this.track = 0;
+  }
+
+  public void setTrackPlayed(int track) {
+    this.track = track;
+  }
+
+  public int getTrackPlayed() {
+    return track;
   }
 
   public void calculateSimulation() {
-    mainContainer.reset();
-    for (int i = 0; i < totalFrames - 1; i++) {
-       mainContainer.nextState();
+    for (SimulationContainer track : tracks) {
+      track.reset();
+      for (int j = 0; j < totalFrames - 1; j++) {
+        track.nextState();
+      }
     }
   }
 
   public SimulationState getState() {
-    return mainContainer.getState(clock.getFrameIndex());
+    return getContainer().getState(clock.getFrameIndex());
   }
 
   public SimulationState getState(int frame) {
-    return mainContainer.getState(frame);
+    return getContainer().getState(frame);
   }
 
   public int getCurrentFrame() {
@@ -49,5 +61,9 @@ public class SimulationPlayer {
 
   public void setFrameIndex(int frameIndex) {
     clock.setFrameIndex(frameIndex);
+  }
+
+  private SimulationContainer getContainer() {
+    return tracks[track];
   }
 }

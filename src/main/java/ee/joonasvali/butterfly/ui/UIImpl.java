@@ -49,8 +49,14 @@ public class UIImpl implements UI {
   }
 
   @Override
-  public void drawUITop(Graphics g, int totalFrames) {
+  public void drawUITop(Graphics g, int totalFrames, int trackPlayed) {
     drawFrameCounter(g, totalFrames);
+    drawTrack(g, trackPlayed);
+  }
+
+  private void drawTrack(Graphics g, int trackPlayed) {
+    g.setColor(Color.white);
+    g.drawString("Track: " + trackPlayed, 250, 10);
   }
 
   public void drawSimulation(SimulationPainter painter, SimulationState simulationState) {

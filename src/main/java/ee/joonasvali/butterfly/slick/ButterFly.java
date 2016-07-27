@@ -33,6 +33,7 @@ import java.util.List;
  */
 public class ButterFly extends BasicGame {
   public static final int TOTAL_FRAMES_IN_SIMULATION = 1000;
+  public static final int TOTAL_TRACKS = 2;
 
   private final int simulationSizeMultiplier;
   private final int actorsInSimulation;
@@ -83,7 +84,11 @@ public class ButterFly extends BasicGame {
         simHeight
     );
 
-    this.player = new SimulationPlayer(this.container, TOTAL_FRAMES_IN_SIMULATION, clock);
+    this.player = new SimulationPlayer(
+        new SimulationContainer[]{this.container, this.container.copy()}, // Currently two tracks supported
+        TOTAL_FRAMES_IN_SIMULATION, clock
+    );
+
     this.player.calculateSimulation();
     this.playerPainter = new SimulationPlayerPainterImpl(config.getWindowResolutionWidth(), config.getWindowResolutionHeight());
 
@@ -131,7 +136,7 @@ public class ButterFly extends BasicGame {
     graphics.drawString("Hello world!", 10, 20);
     ui.drawUI(graphics, player, playerPainter);
     ui.drawSimulation(container.getPainter(), player.getState());
-    ui.drawUITop(graphics, player.getCurrentFrame());
+    ui.drawUITop(graphics, player.getCurrentFrame(), player.getTrackPlayed());
     graphics.flush();
   }
 
@@ -148,6 +153,13 @@ public class ButterFly extends BasicGame {
   @Override
   public void keyReleased(int key, char c) {
     log.info("keycode: " + key + " pressed ");
+
+    if (key == Input.KEY_T) {
+      int track = player.getTrackPlayed();
+      track++;
+      player.setTrackPlayed(track % TOTAL_TRACKS);
+      return;
+    }
 
     clockListener.keyReleased(key);
 

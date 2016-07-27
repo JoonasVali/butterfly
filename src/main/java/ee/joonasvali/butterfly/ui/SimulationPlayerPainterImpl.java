@@ -25,28 +25,35 @@ public class SimulationPlayerPainterImpl implements SimulationPlayerPainter {
 
   @Override
   public Image getPlayerImage(SimulationPlayer player) {
-    int frames = player.getTotalFrames();
-
     g.clear();
     g.setColor(Color.gray);
-    g.drawRect(10, 10, image.getWidth() - 20, image.getHeight() - 20);
-    g.setColor(Color.red);
-    int breakPoint = player.getCurrentFrame();
-    g.drawLine(LINE_X, LINE_Y, 15 + breakPoint, LINE_Y);
-    g.drawLine(LINE_X, LINE_Y + 1, 15 + breakPoint, LINE_Y + 1);
-    g.setColor(LINE_WHITE);
-    g.drawLine(15 + breakPoint, LINE_Y, 15 + frames - 1, LINE_Y);
-    g.drawLine(15 + breakPoint, LINE_Y + 1, 15 + frames - 1, LINE_Y + 1);
-
-    g.setColor(Color.white);
-    for (int i = 0; i < 5; i++) {
-      g.drawLine(15 + breakPoint + i, 15, 15 + breakPoint + i, 20);
-    }
-
-
+    g.drawRect(10, 10, image.getWidth() - 10 * 2, image.getHeight() - 15);
+    drawPlayerAt(10, 10, g, player);
+    drawPlayerAt(10, 30, g, player);
 
     g.flush();
     return image;
+  }
+
+  public void drawPlayerAt(int x, int y, Graphics g, SimulationPlayer player) {
+    int frames = player.getTotalFrames();
+
+    g.setColor(Color.red);
+    int breakPoint = player.getCurrentFrame();
+
+    // Draw red line
+    g.drawLine(x + 5, y + 5, x + 5 + breakPoint, y + 5);
+    g.drawLine(x + 5, y + 5 + 1, x + 5 + breakPoint, y + 5 + 1);
+
+    // Draw white line
+    g.setColor(LINE_WHITE);
+    g.drawLine(x + 5 + breakPoint, y + 5, x + 5 + frames - 1, y + 5);
+    g.drawLine(x + 5 + breakPoint, y + 5 + 1, x + 5 + frames - 1, y + 5 + 1);
+
+    g.setColor(Color.white);
+    for (int i = 0; i < 5; i++) {
+      g.drawLine(x + 5 + breakPoint + i, y + 5, x + 5 + breakPoint + i, y + 10);
+    }
   }
 
 
