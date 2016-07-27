@@ -10,7 +10,7 @@
 
   <properties>
     <name>Butterfly</name>
-    <name.uppercase>Butterfly</name.uppercase>
+    <name.uppercase>BUTTERFLY</name.uppercase>
     <boot.class>ee.joonasvali.butterfly.Boot</boot.class>
     <author>Joonas Vali</author>
     <timestamp>${maven.build.timestamp}</timestamp>
