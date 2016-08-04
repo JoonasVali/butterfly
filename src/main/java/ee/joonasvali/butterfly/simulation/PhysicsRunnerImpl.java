@@ -23,6 +23,7 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
   public static final int HEALTH_DECAY = 1;
   public static final int DIAMETER_DETECTION = 100;
   public static final int SIDEWAYS_IMPULSE_MODIFIER = 170;
+  public static final int COLLISION_FORCE_MODIFIER = 8;
   private final ActorVisionHelper visionHelper;
 
   public PhysicsRunnerImpl(ActorVisionHelper visionHelper) {
@@ -89,6 +90,10 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
     return result.stream().map(FoodBuilder::build).collect(Collectors.toList());
   }
 
+  private boolean isCollision(Physical one, Physical two) {
+    return isInRadius(one, two.getX(), two.getY(), two.getDiameter());
+  }
+
   private boolean isInRadius(Physical f, double x, double y, int diameter) {
     double radius = diameter / 2;
     double midX = x + radius;
@@ -108,7 +113,26 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
     for (Actor actor : actors) {
       newActors.add(act(actor, actors, food, width, height));
     }
+    modifyCollisions(newActors);
     return newActors;
+  }
+
+  private void modifyCollisions(List<ActorBuilder> actors) {
+    for (ActorBuilder actor : actors) {
+      for (ActorBuilder actor2 : actors) {
+        if (actor == actor2) {
+          continue;
+        }
+        if (isCollision(actor, actor2)) {
+          int xdelta = (int)(actor.getX() - actor2.getX());
+          int ydelta = (int)(actor.getY() - actor2.getY());
+          int xForce = xdelta / COLLISION_FORCE_MODIFIER;
+          int yForce = ydelta / COLLISION_FORCE_MODIFIER;
+          actor.setXImpulse(actor.getXImpulse() + xForce);
+          actor.setYImpulse(actor.getYImpulse() + yForce);
+        }
+      }
+    }
   }
 
   private ActorBuilder act(Actor actor, List<Actor> actors, List<Food> foods, int width, int height) {
@@ -137,6 +161,7 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
 
     builder.setX(builder.getX() + xMovement + builder.getXImpulse());
     builder.setY(builder.getY() + yMovement + builder.getYImpulse());
+
 
     /*
       Limit world boundaries

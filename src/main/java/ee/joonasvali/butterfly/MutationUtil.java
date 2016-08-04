@@ -28,7 +28,7 @@ public class MutationUtil {
 
   private static List<Food> removeOneFood(List<Food> food) {
     List<Food> n = new ArrayList<>(food);
-    for (int i = 0; i < 5 ; i++)
+    for (int i = 0; i < 1 ; i++)
       n.remove((int)(Math.random() * n.size()));
     return n;
   }
