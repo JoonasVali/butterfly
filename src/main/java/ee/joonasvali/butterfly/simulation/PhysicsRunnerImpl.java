@@ -130,6 +130,8 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
           int yForce = ydelta / COLLISION_FORCE_MODIFIER;
           actor.setXImpulse(actor.getXImpulse() + xForce);
           actor.setYImpulse(actor.getYImpulse() + yForce);
+          int force = (int) Math.sqrt(Math.pow(xdelta, 2) + Math.pow(ydelta, 2));
+          actor.setHealth(Math.max(0, actor.getHealth() - force));
         }
       }
     }

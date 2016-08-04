@@ -34,8 +34,6 @@ public class SimulationPainterImpl implements SimulationPainter {
   private final Graphics g;
   private final Font font;
   private final ActorVisionHelper visionHelper;
-  private int playerX;
-  private int playerY;
 
   public SimulationPainterImpl(int width, int height, int actorDiameter, int foodDiameter, ActorVisionHelper visionHelper) throws SlickException {
     this.visionHelper = visionHelper;
@@ -112,8 +110,12 @@ public class SimulationPainterImpl implements SimulationPainter {
         this.actorBad.setRotation((float) actor.getRotation() + 90);
         g.drawImage(this.actorBad, actor.getRoundedX(), actor.getRoundedY());
       }
-      Font previous = g.getFont();
       g.setFont(font);
+
+      g.setColor(Color.white);
+      g.drawString(String.valueOf(actor.getHealth()) + " hp", actor.getRoundedX() + actorDiameter / 2, actor.getRoundedY() + actorDiameter / 2);
+      Font previous = g.getFont();
+
       g.drawString(actor.getId(), actor.getRoundedX() + actorDiameter + 5, actor.getRoundedY() - 5);
       g.setFont(previous);
       drawVision(g, actor);
