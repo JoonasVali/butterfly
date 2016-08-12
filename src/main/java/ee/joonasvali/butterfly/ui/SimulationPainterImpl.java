@@ -13,7 +13,6 @@ import org.newdawn.slick.TrueTypeFont;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,29 +23,24 @@ public class SimulationPainterImpl implements SimulationPainter {
   public static final Color BACKGROUND_COLOR = new Color(10, 10, 50);
   private final int width;
   private final int height;
-  private final int actorDiameter;
   private final int foodDiameter;
   private final Image image;
-  private final Image actorOk;
-  private final Image actorMedium;
-  private final Image actorBad;
+  private final Image actor;
+  private final Graphics actorGraphics;
   private final Image food;
   private final Graphics g;
   private final Font font;
   private final ActorVisionHelper visionHelper;
 
-  public SimulationPainterImpl(int width, int height, int actorDiameter, int foodDiameter, ActorVisionHelper visionHelper) throws SlickException {
+  public SimulationPainterImpl(int width, int height, int maxActorDiameter, int foodDiameter, ActorVisionHelper visionHelper) throws SlickException {
     this.visionHelper = visionHelper;
     this.width = width;
     this.height = height;
-    this.actorDiameter = actorDiameter;
     this.foodDiameter = foodDiameter;
     this.image = new Image(width, height);
-    this.actorOk = createActor(Color.cyan);
-    this.actorMedium = createActor(Color.orange);
-    this.actorBad = createActor(Color.red);
     this.food = createFood();
-
+    this.actor = new Image(maxActorDiameter, maxActorDiameter);
+    this.actorGraphics = this.actor.getGraphics();
     this.image.setFilter(Image.FILTER_LINEAR);
     this.g = image.getGraphics();
     this.font = createFont();
@@ -69,15 +63,14 @@ public class SimulationPainterImpl implements SimulationPainter {
     return image;
   }
 
-  private Image createActor(Color color) throws SlickException {
-    Image image = new Image(actorDiameter, actorDiameter);
-    Graphics g = image.getGraphics();
+  private void paintActor(Graphics g, int diameter, Color color) {
     g.setLineWidth(5);
     g.setColor(color);
-    g.drawOval(0, 0, actorDiameter, actorDiameter);
-    g.drawLine(actorDiameter / 2, actorDiameter / 2, actorDiameter / 2, 0);
+    int x = (actor.getWidth() - diameter) / 2;
+    int y = (actor.getHeight() - diameter) / 2;
+    g.drawOval(x, y, diameter, diameter);
+    g.drawLine(x + diameter / 2, y + diameter / 2, x + diameter / 2, y);
     g.flush();
-    return image;
   }
 
   @Override
@@ -100,27 +93,27 @@ public class SimulationPainterImpl implements SimulationPainter {
 
   private void drawActors(Graphics g, List<Actor> actors) {
     for (Actor actor : actors) {
-      if (actor.getHealth() > 800) {
-        this.actorOk.setRotation((float) actor.getRotation() + 90);
-        g.drawImage(this.actorOk, actor.getRoundedX(), actor.getRoundedY());
-      } else if (actor.getHealth() > 400) {
-        this.actorMedium.setRotation((float) actor.getRotation() + 90);
-        g.drawImage(this.actorMedium, actor.getRoundedX(), actor.getRoundedY());
-      } else {
-        this.actorBad.setRotation((float) actor.getRotation() + 90);
-        g.drawImage(this.actorBad, actor.getRoundedX(), actor.getRoundedY());
-      }
+      actorGraphics.clear();
+      paintActor(actorGraphics, actor.getDiameter(), getActorColor(actor.getHealth()));
+      this.actor.setRotation((float) actor.getRotation() + 90);
+      int x = actor.getRoundedX() - ((this.actor.getWidth() - actor.getDiameter()) / 2);
+      int y = actor.getRoundedY() - ((this.actor.getHeight() - actor.getDiameter()) / 2);
+      g.drawImage(this.actor, x, y);
       g.setFont(font);
 
       g.setColor(Color.white);
-      g.drawString(String.valueOf(actor.getHealth()) + " hp", actor.getRoundedX() + actorDiameter / 2, actor.getRoundedY() + actorDiameter / 2);
+      g.drawString(String.valueOf(actor.getHealth()) + " hp", actor.getRoundedX() + actor.getDiameter() / 2, actor.getRoundedY() + actor.getDiameter() / 2);
       Font previous = g.getFont();
 
-      g.drawString(actor.getId(), actor.getRoundedX() + actorDiameter + 5, actor.getRoundedY() - 5);
+      g.drawString(actor.getId(), actor.getRoundedX() + actor.getDiameter() + 5, actor.getRoundedY() - 5);
       g.setFont(previous);
       drawVision(g, actor);
 
     }
+  }
+
+  private Color getActorColor(int health) {
+    return new Color(100, 100, Math.min(Math.max(health / 5, 0), 255));
   }
 
   private void drawVision(Graphics g, Actor actor) {

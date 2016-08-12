@@ -181,7 +181,7 @@ public class ButterFly extends BasicGame {
         getRandomId(),
         (int) (Math.random() * simWidth),
         (int) (Math.random() * simHeight),
-        config.getActorDiameter(),
+        (int) (10 + (Math.random() * (config.getActorDiameter() - 10))),
         Math.random() * 360,
         0,
         0,
