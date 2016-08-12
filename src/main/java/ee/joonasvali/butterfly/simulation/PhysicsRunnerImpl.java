@@ -24,6 +24,7 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
   public static final int DIAMETER_DETECTION = 100;
   public static final int SIDEWAYS_IMPULSE_MODIFIER = 170;
   public static final int COLLISION_FORCE_MODIFIER = 8;
+  public static final int FOOD_ACTOR_IMPULSE_DIFF = 20;
   private final ActorVisionHelper visionHelper;
 
   public PhysicsRunnerImpl(ActorVisionHelper visionHelper) {
@@ -61,8 +62,12 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
         double fmidX = f.getX() + (double) f.getDiameter() / 2;
         double fmidY = f.getY() + (double) f.getDiameter() / 2;
 
-        if (isInRadius(f, x, y, diameter)) {
-          actor.setHealth((int) (actor.getHealth() + Math.round(f.getPoints())));
+        // Check that actor is on food && food and actor impulses difference is low enough
+        if (isInRadius(f, x, y, diameter) && Math.abs(f.getXImpulse() - actor.getXImpulse()) < FOOD_ACTOR_IMPULSE_DIFF && Math.abs(f.getYImpulse() - actor.getYImpulse()) < FOOD_ACTOR_IMPULSE_DIFF) {
+          actor.setHealth((int) (actor.getHealth() + Math.round(f.getPoints() / actor.getDiameter())));
+          double foodImpulseDecay = Math.max(0, (0.8 - (10 * f.getDiameter() / diameter)));
+          actor.setXImpulse(actor.getXImpulse() * foodImpulseDecay);
+          actor.setYImpulse(actor.getYImpulse() * foodImpulseDecay);
           it.remove();
         } else if (isInRadius(f, x - DIAMETER_DETECTION / 2, y - DIAMETER_DETECTION / 2, diameter + DIAMETER_DETECTION)) {
           // If food close to actor, but not in radius.

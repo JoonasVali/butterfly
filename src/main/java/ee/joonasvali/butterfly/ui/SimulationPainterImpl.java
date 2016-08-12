@@ -65,9 +65,12 @@ public class SimulationPainterImpl implements SimulationPainter {
 
   private void paintActor(Graphics g, int diameter, Color color) {
     g.setLineWidth(5);
-    g.setColor(color);
+
     int x = (actor.getWidth() - diameter) / 2;
     int y = (actor.getHeight() - diameter) / 2;
+    g.setColor(color.brighter(0.5f));
+    g.fillOval(x, y, diameter, diameter);
+    g.setColor(color);
     g.drawOval(x, y, diameter, diameter);
     g.drawLine(x + diameter / 2, y + diameter / 2, x + diameter / 2, y);
     g.flush();
