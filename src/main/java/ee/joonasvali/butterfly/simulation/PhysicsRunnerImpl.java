@@ -1,6 +1,7 @@
 package ee.joonasvali.butterfly.simulation;
 
 import ee.joonasvali.butterfly.code.Immutable;
+import ee.joonasvali.butterfly.config.PhysicsConfig;
 import ee.joonasvali.butterfly.simulation.actor.Action;
 import ee.joonasvali.butterfly.simulation.actor.Actor;
 import ee.joonasvali.butterfly.simulation.actor.vision.ActorVisionHelper;
@@ -18,17 +19,24 @@ import java.util.stream.Collectors;
  */
 @Immutable
 public class PhysicsRunnerImpl implements PhysicsRunner {
-  public static final int MAX_ROTATION_IMPULSE = 5;
-  public static final double IMPULSE_DECAY = 1.1;
-  public static final int HEALTH_DECAY = 1;
-  public static final int DIAMETER_DETECTION = 100;
-  public static final int SIDEWAYS_IMPULSE_MODIFIER = 170;
-  public static final double COLLISION_FORCE_MODIFIER = 8;
-  public static final int FOOD_ACTOR_IMPULSE_DIFF = 20;
+  private final int maxRotationImpulse;
+  private final double impulseDecay;
+  private final int healthDecay;
+  private final int foodDetectionDiameter;
+  private final int sidewaysImpulseModifier;
+  private final double collisionForceModifier;
+  private final int foodActorImpulseDiff;
   private final ActorVisionHelper visionHelper;
 
-  public PhysicsRunnerImpl(ActorVisionHelper visionHelper) {
+  public PhysicsRunnerImpl(ActorVisionHelper visionHelper, PhysicsConfig config) {
     this.visionHelper = visionHelper;
+    maxRotationImpulse = config.getMaxRotationImpulse();
+    impulseDecay = config.getImpulseDecay();
+    healthDecay = config.getHealthDecay();
+    foodDetectionDiameter = config.getFoodDetectionDiameter();
+    sidewaysImpulseModifier = config.getSidewaysImpulseModifier();
+    collisionForceModifier = config.getCollisionForceModifier();
+    foodActorImpulseDiff = config.getActorFoodConsumeImpulseDiff();
   }
 
   @Override
@@ -63,16 +71,16 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
         double fmidY = f.getY() + (double) f.getDiameter() / 2;
 
         // Check that actor is on food && food and actor impulses difference is low enough
-        if (isInRadius(f, x, y, diameter) && Math.abs(f.getXImpulse() - actor.getXImpulse()) < FOOD_ACTOR_IMPULSE_DIFF && Math.abs(f.getYImpulse() - actor.getYImpulse()) < FOOD_ACTOR_IMPULSE_DIFF) {
+        if (isInRadius(f, x, y, diameter) && Math.abs(f.getXImpulse() - actor.getXImpulse()) < foodActorImpulseDiff && Math.abs(f.getYImpulse() - actor.getYImpulse()) < foodActorImpulseDiff) {
           actor.setHealth((int) (actor.getHealth() + Math.round(f.getPoints() / actor.getDiameter())));
           double foodImpulseDecay = Math.max(0, (0.8 - (10 * f.getDiameter() / diameter)));
           actor.setXImpulse(actor.getXImpulse() * foodImpulseDecay);
           actor.setYImpulse(actor.getYImpulse() * foodImpulseDecay);
           it.remove();
-        } else if (isInRadius(f, x - DIAMETER_DETECTION / 2, y - DIAMETER_DETECTION / 2, diameter + DIAMETER_DETECTION)) {
+        } else if (isInRadius(f, x - foodDetectionDiameter / 2, y - foodDetectionDiameter / 2, diameter + foodDetectionDiameter)) {
           // If food close to actor, but not in radius.
-          f.setXImpulse(f.getXImpulse() + (fmidX - midX) / (SIDEWAYS_IMPULSE_MODIFIER - Math.abs(actor.getYImpulse() /* Y on purpose */)));
-          f.setYImpulse(f.getYImpulse() + (fmidY - midY) / (SIDEWAYS_IMPULSE_MODIFIER - Math.abs(actor.getXImpulse() /* X on purpose */)));
+          f.setXImpulse(f.getXImpulse() + (fmidX - midX) / (sidewaysImpulseModifier - Math.abs(actor.getYImpulse() /* Y on purpose */)));
+          f.setYImpulse(f.getYImpulse() + (fmidY - midY) / (sidewaysImpulseModifier - Math.abs(actor.getXImpulse() /* X on purpose */)));
         }
       }
     }
@@ -88,8 +96,8 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
       f.setX(Math.min(Math.max(0, f.getX()), width - f.getDiameter()));
       f.setY(Math.min(Math.max(0, f.getY()), height - f.getDiameter()));
 
-      f.setXImpulse((f.getX() - f.getOriginal().getX()) / IMPULSE_DECAY);
-      f.setYImpulse((f.getY() - f.getOriginal().getY()) / IMPULSE_DECAY);
+      f.setXImpulse((f.getX() - f.getOriginal().getX()) / impulseDecay);
+      f.setYImpulse((f.getY() - f.getOriginal().getY()) / impulseDecay);
     }
 
     return result.stream().map(FoodBuilder::build).collect(Collectors.toList());
@@ -131,8 +139,8 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
         if (isCollision(actor, actor2)) {
           double xdelta = actor.getX() - actor2.getX();
           double ydelta = actor.getY() - actor2.getY();
-          double xForce = xdelta / COLLISION_FORCE_MODIFIER;
-          double yForce = ydelta / COLLISION_FORCE_MODIFIER;
+          double xForce = xdelta / collisionForceModifier;
+          double yForce = ydelta / collisionForceModifier;
           xForce = xForce * ((double)actor2.getDiameter() / (double)actor.getDiameter());
           yForce = yForce * ((double)actor2.getDiameter() / (double)actor.getDiameter());
           actor.setXImpulse(actor.getXImpulse() + xForce);
@@ -146,7 +154,7 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
 
   private ActorBuilder act(Actor actor, List<Actor> actors, List<Food> foods, int width, int height) {
     ActorBuilder builder = new ActorBuilder(actor);
-    builder.setHealth(builder.getHealth() - HEALTH_DECAY);
+    builder.setHealth(builder.getHealth() - healthDecay);
 
     List<VisibleActor> visibleActors = getVisibleActors(actor, actors);
     List<VisibleFood> visibleFoods = getVisibleFoods(actor, foods);
@@ -154,13 +162,13 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
     Action action = actor.move(visibleActors, visibleFoods);
 
     builder.setRotationImpulse(builder.getRotationImpulse() + action.getRotation());
-    builder.setRotationImpulse(Math.min(builder.getRotationImpulse(), MAX_ROTATION_IMPULSE));
-    builder.setRotationImpulse(Math.max(builder.getRotationImpulse(), -MAX_ROTATION_IMPULSE));
+    builder.setRotationImpulse(Math.min(builder.getRotationImpulse(), maxRotationImpulse));
+    builder.setRotationImpulse(Math.max(builder.getRotationImpulse(), -maxRotationImpulse));
 
     double thrust = action.getThrust();
 
     builder.setRotation(builder.getRotation() + builder.getRotationImpulse());
-    builder.setRotationImpulse((builder.getRotation() - actor.getRotation()) / IMPULSE_DECAY);
+    builder.setRotationImpulse((builder.getRotation() - actor.getRotation()) / impulseDecay);
 
     double yMovement;
     double xMovement;
@@ -178,8 +186,8 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
     builder.setX(Math.min(Math.max(0, builder.getX()), width - actor.getDiameter()));
     builder.setY(Math.min(Math.max(0, builder.getY()), height - actor.getDiameter()));
 
-    builder.setXImpulse((builder.getX() - actor.getX()) / IMPULSE_DECAY);
-    builder.setYImpulse((builder.getY() - actor.getY()) / IMPULSE_DECAY);
+    builder.setXImpulse((builder.getX() - actor.getX()) / impulseDecay);
+    builder.setYImpulse((builder.getY() - actor.getY()) / impulseDecay);
 
     return builder;
   }
