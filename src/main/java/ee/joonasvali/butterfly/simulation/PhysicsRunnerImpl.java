@@ -23,7 +23,7 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
   public static final int HEALTH_DECAY = 1;
   public static final int DIAMETER_DETECTION = 100;
   public static final int SIDEWAYS_IMPULSE_MODIFIER = 170;
-  public static final int COLLISION_FORCE_MODIFIER = 8;
+  public static final double COLLISION_FORCE_MODIFIER = 8;
   public static final int FOOD_ACTOR_IMPULSE_DIFF = 20;
   private final ActorVisionHelper visionHelper;
 
@@ -129,12 +129,12 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
           continue;
         }
         if (isCollision(actor, actor2)) {
-          int xdelta = (int)(actor.getX() - actor2.getX());
-          int ydelta = (int)(actor.getY() - actor2.getY());
-          int xForce = xdelta / COLLISION_FORCE_MODIFIER;
-          int yForce = ydelta / COLLISION_FORCE_MODIFIER;
-          xForce = xForce * (actor2.getDiameter() / actor.getDiameter());
-          yForce = yForce * (actor2.getDiameter() / actor.getDiameter());
+          double xdelta = actor.getX() - actor2.getX();
+          double ydelta = actor.getY() - actor2.getY();
+          double xForce = xdelta / COLLISION_FORCE_MODIFIER;
+          double yForce = ydelta / COLLISION_FORCE_MODIFIER;
+          xForce = xForce * ((double)actor2.getDiameter() / (double)actor.getDiameter());
+          yForce = yForce * ((double)actor2.getDiameter() / (double)actor.getDiameter());
           actor.setXImpulse(actor.getXImpulse() + xForce);
           actor.setYImpulse(actor.getYImpulse() + yForce);
           int force = (int) Math.sqrt(Math.pow(xForce, 2) + Math.pow(yForce, 2));
