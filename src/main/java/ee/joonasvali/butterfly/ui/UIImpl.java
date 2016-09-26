@@ -85,8 +85,8 @@ public class UIImpl implements UI {
         }
         switch ((AreaImpl)area) {
           case PLAYER: player = listener; break;
-          case SETTINGS: simulation = listener; break;
-          case SIMULATION: settings = listener; break;
+          case SIMULATION: simulation = listener; break;
+          case SETTINGS: settings = listener; break;
           default: throw new IllegalArgumentException("wrong Area type: " + area);
         }
       }
