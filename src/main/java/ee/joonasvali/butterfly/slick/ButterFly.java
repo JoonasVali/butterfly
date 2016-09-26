@@ -6,6 +6,7 @@ import ee.joonasvali.butterfly.player.ClockImpl;
 import ee.joonasvali.butterfly.player.KeyBoardClockListener;
 import ee.joonasvali.butterfly.player.SimulationPlayer;
 import ee.joonasvali.butterfly.simulation.Food;
+import ee.joonasvali.butterfly.simulation.Physical;
 import ee.joonasvali.butterfly.simulation.actor.Actor;
 import ee.joonasvali.butterfly.simulation.PhysicsRunner;
 import ee.joonasvali.butterfly.simulation.SimulationContainer;
@@ -13,6 +14,7 @@ import ee.joonasvali.butterfly.simulation.SimulationState;
 import ee.joonasvali.butterfly.simulation.actor.vision.ActorVisionHelper;
 import ee.joonasvali.butterfly.ui.MouseDispatcher;
 import ee.joonasvali.butterfly.ui.MouseListener;
+import ee.joonasvali.butterfly.ui.SelectionListener;
 import ee.joonasvali.butterfly.ui.SimulationPainterImpl;
 import ee.joonasvali.butterfly.ui.SimulationPlayerPainter;
 import ee.joonasvali.butterfly.ui.SimulationPlayerPainterImpl;
@@ -43,7 +45,7 @@ public class ButterFly extends BasicGame {
   private final Clock clock;
   private final KeyBoardClockListener clockListener;
 
-  private volatile SimulationContainer container;
+  private volatile SimulationContainer[] containers = new SimulationContainer[2];
   private volatile SimulationPlayer player;
   private volatile SimulationPlayerPainter playerPainter;
 
@@ -52,6 +54,7 @@ public class ButterFly extends BasicGame {
 
   private final static Logger log = LoggerFactory.getLogger(ButterFly.class);
   private volatile boolean shutdown;
+  private volatile Physical selected;
 
   public ButterFly(UI ui, ButterFlyConfig config, PhysicsRunner runner, ActorVisionHelper visionHelper) {
     super("ButterFly");
@@ -74,16 +77,19 @@ public class ButterFly extends BasicGame {
     int simHeight = simulationSizeMultiplier * height;
     SimulationPainterImpl painter = new SimulationPainterImpl(simWidth, simHeight, ((UIImpl)ui).getSimulationScreenWidth(),
         ((UIImpl)ui).getSimulationScreenHeight(), config.getActorDiameter(), config.getFoodDiameter(), visionHelper);
-    this.container = new SimulationContainer(
+    SimulationContainer container = new SimulationContainer(
         runner,
         createInitialState(simWidth, simHeight),
         painter,
         simWidth,
         simHeight
     );
+    this.containers = new SimulationContainer[]{container, container.copy()};
+
+    painter.addSelectionListener(createSelectionListener());
 
     this.player = new SimulationPlayer(
-        new SimulationContainer[]{this.container, this.container.copyTemp()}, // Currently two tracks supported
+        containers,
         config.getFramesInSimulation(), clock
     );
 
@@ -96,8 +102,16 @@ public class ButterFly extends BasicGame {
     mouseListenerList.add(dispatcher);
   }
 
+  private SelectionListener createSelectionListener() {
+    return physical -> selected = physical;
+  }
+
   private MouseListener createSimulationMouseListener() {
-    return ((SimulationPainterImpl)container.getPainter()).createMouseListener(clock);
+    return ((SimulationPainterImpl)getActiveTrackContainer().getPainter()).createMouseListener(clock);
+  }
+
+  private SimulationContainer getActiveTrackContainer() {
+    return containers[player.getTrackPlayed()];
   }
 
   private SimulationState createInitialState(int simWidth, int simHeight) {
@@ -138,7 +152,7 @@ public class ButterFly extends BasicGame {
   public void render(GameContainer gameContainer, Graphics graphics) throws SlickException {
     graphics.drawString("Hello world!", 10, 20);
     ui.drawUI(graphics, player, playerPainter);
-    ui.drawSimulation(container.getPainter(), player.getState());
+    ui.drawSimulation(getActiveTrackContainer().getPainter(), player.getState());
     ui.drawUITop(graphics, player.getCurrentFrame(), player.getTrackPlayed());
     graphics.flush();
   }
@@ -157,6 +171,13 @@ public class ButterFly extends BasicGame {
   public void keyReleased(int key, char c) {
     log.info("keycode: " + key + " pressed ");
 
+    if (key == Input.KEY_DELETE) {
+      Physical selected = this.selected;
+      if (selected != null) {
+        removePhysical(selected);
+      }
+    }
+
     if (key == Input.KEY_T) {
       int track = player.getTrackPlayed();
       track++;
@@ -168,6 +189,24 @@ public class ButterFly extends BasicGame {
 
     if (key == Input.KEY_ESCAPE) {
       shutdown = true;
+    }
+  }
+
+  private void removePhysical(Physical selected) {
+    if (selected instanceof Actor) {
+      // remove actor
+      SimulationState state = getActiveTrackContainer().getState(clock.getFrameIndex());
+      List<Actor> actors = new ArrayList<>(state.getActors());
+      actors.remove(selected);
+      SimulationState newState = new SimulationState(state.getFrameNumber(), actors, state.getFood(), state.getWidth(), state.getHeight());
+      getActiveTrackContainer().alterState(newState);
+    } else if (selected instanceof Food) {
+      // remove food
+      SimulationState state = getActiveTrackContainer().getState(clock.getFrameIndex());
+      List<Food> food = new ArrayList<>(state.getFood());
+      food.remove(selected);
+      SimulationState newState = new SimulationState(state.getFrameNumber(), state.getActors(), food, state.getWidth(), state.getHeight());
+      getActiveTrackContainer().alterState(newState);
     }
   }
 

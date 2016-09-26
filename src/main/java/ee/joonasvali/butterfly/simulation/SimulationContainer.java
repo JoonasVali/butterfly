@@ -1,6 +1,5 @@
 package ee.joonasvali.butterfly.simulation;
 
-import ee.joonasvali.butterfly.MutationUtil;
 import ee.joonasvali.butterfly.ui.SimulationPainter;
 
 import java.util.ArrayList;
@@ -46,10 +45,6 @@ public class SimulationContainer {
     return states.size();
   }
 
-  public SimulationState getState() {
-    return states.get(states.size() - 1);
-  }
-
   public void reset() {
     if (states.size() > 0) {
       SimulationState s = states.get(0);
@@ -66,9 +61,18 @@ public class SimulationContainer {
     return new SimulationContainer(runner, states.get(0), painter, getWidth(), getHeight());
   }
 
-  /* TODO remove */
-  public SimulationContainer copyTemp() {
-    return new SimulationContainer(runner, MutationUtil.mutate(states.get(0)), painter, getWidth(), getHeight());
+  /**
+   * Alter history. Reruns simulation after the altered frame.
+   */
+  public void alterState(SimulationState currentState) {
+    int size = states.size();
+    System.out.println("size after: " + size);
+    states.removeIf(state -> state.getFrameNumber() >= currentState.getFrameNumber());
+    System.out.println("size after: " + states.size());
+    states.add(currentState.getFrameNumber(), currentState);
+    for (int i = states.size(); i < size; i++) {
+      nextState();
+    }
+    System.out.println("size final: " + states.size());
   }
-
 }

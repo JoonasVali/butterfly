@@ -17,6 +17,7 @@ import org.newdawn.slick.TrueTypeFont;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,6 +26,7 @@ import java.util.List;
 public class SimulationPainterImpl implements SimulationPainter {
   private static final Logger log = LoggerFactory.getLogger(SimulationPainterImpl.class);
   public static final Color BACKGROUND_COLOR = new Color(10, 10, 50);
+  private final List<SelectionListener> selectionListeners = new ArrayList<>();
   private final int width;
   private final int height;
   private final int foodDiameter;
@@ -107,6 +109,11 @@ public class SimulationPainterImpl implements SimulationPainter {
     g.flush();
     image.draw(screenX, screenY, simulationScale);
     drawStrings(screenX, screenY, simulationScale, state);
+  }
+
+  @Override
+  public void addSelectionListener(SelectionListener listener) {
+    selectionListeners.add(listener);
   }
 
   private void drawStrings(int screenX, int screenY, float simulationScale, SimulationState state) {
@@ -194,6 +201,7 @@ public class SimulationPainterImpl implements SimulationPainter {
         for (Actor a : lastActors) {
           if (x > a.getX() && x < a.getX() + a.getDiameter() && y > a.getY() && y < a.getY() + a.getDiameter()) {
             selected = a;
+            notifySelectionListeners(a);
             return;
           }
         }
@@ -201,12 +209,18 @@ public class SimulationPainterImpl implements SimulationPainter {
         for (Food f : lastFood) {
           if (x >= f.getX() && x <= f.getX() + f.getDiameter() && y >= f.getY() && y <= f.getY() + f.getDiameter()) {
             selected = f;
+            notifySelectionListeners(f);
             return;
           }
         }
 
+        notifySelectionListeners(null);
         selected = null;
       }
     }
+  }
+
+  private void notifySelectionListeners(Physical selected) {
+    selectionListeners.forEach(listener -> listener.onPhysicalSelected(selected));
   }
 }

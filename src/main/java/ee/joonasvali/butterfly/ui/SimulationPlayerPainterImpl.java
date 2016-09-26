@@ -116,8 +116,8 @@ public class SimulationPlayerPainterImpl implements SimulationPlayerPainter {
         } else {
           clock.pause(true);
         }
+        return;
       }
-
 
       if (x < trackWidth + 10 && x >= 10) {
         x -= 10;

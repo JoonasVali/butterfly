@@ -7,4 +7,5 @@ import ee.joonasvali.butterfly.simulation.SimulationState;
  */
 public interface SimulationPainter {
   void draw(int simulationX, int simulationY, SimulationState state);
+  void addSelectionListener(SelectionListener listener);
 }
