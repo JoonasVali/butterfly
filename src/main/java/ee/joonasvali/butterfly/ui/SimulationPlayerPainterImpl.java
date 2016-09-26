@@ -26,7 +26,7 @@ public class SimulationPlayerPainterImpl implements SimulationPlayerPainter {
   private final Graphics g;
 
   public SimulationPlayerPainterImpl(int windowWidth, int windowHeight) throws SlickException {
-    this.image = new Image(windowWidth - 100, 50);
+    this.image = new Image(windowWidth - 100, 90);
     this.g = image.getGraphics();
 
   }
@@ -35,15 +35,24 @@ public class SimulationPlayerPainterImpl implements SimulationPlayerPainter {
   public Image getPlayerImage(SimulationPlayer player) {
     g.clear();
     g.setColor(Color.gray);
-    g.drawRect(10, 10, image.getWidth() - 10 * 2, image.getHeight() - 15);
-    drawPlayerAt(10, 10, g, player, player.getTrackPlayed() == 0);
-    drawPlayerAt(10, 30, g, player, player.getTrackPlayed() == 1);
-
+    g.drawRect(10, 1, image.getWidth() - 10 * 2, image.getHeight() - 15);
+    drawTrackAt(10, 10, g, player, player.getTrackPlayed() == 0);
+    drawTrackAt(10, 30, g, player, player.getTrackPlayed() == 1);
+    drawControlsAt(30, 45, g);
     g.flush();
     return image;
   }
 
-  public void drawPlayerAt(int x, int y, Graphics g, SimulationPlayer player, boolean active) {
+  private void drawControlsAt(int x, int y, Graphics g) {
+    g.setColor(Color.white);
+    // Draw play
+    int length = 20;
+    g.drawLine(x, y, x + length, y + 10);
+    g.drawLine(x, y, x, y + 20);
+    g.drawLine(x, y + 20, x + length, y + 10);
+  }
+
+  public void drawTrackAt(int x, int y, Graphics g, SimulationPlayer player, boolean active) {
     int frames = player.getTotalFrames();
 
     g.setColor(active ? ACTIVE_RED : INACTIVE_RED);

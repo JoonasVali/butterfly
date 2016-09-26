@@ -1,6 +1,7 @@
 package ee.joonasvali.butterfly.ui;
 
 import ee.joonasvali.butterfly.simulation.Food;
+import ee.joonasvali.butterfly.simulation.Physical;
 import ee.joonasvali.butterfly.simulation.actor.Actor;
 import ee.joonasvali.butterfly.simulation.SimulationState;
 import ee.joonasvali.butterfly.simulation.actor.vision.ActorVisionHelper;
@@ -8,6 +9,7 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 import org.slf4j.Logger;
@@ -31,11 +33,17 @@ public class SimulationPainterImpl implements SimulationPainter {
   private final Graphics g;
   private final Font font;
   private final ActorVisionHelper visionHelper;
+  private final float simulationScale;
+  private volatile List<Actor> lastActors;
+  private volatile List<Food> lastFood;
 
-  public SimulationPainterImpl(int width, int height, int maxActorDiameter, int foodDiameter, ActorVisionHelper visionHelper) throws SlickException {
+  private volatile Physical selected;
+
+  public SimulationPainterImpl(int width, int height, int onScreenWidth, int onScreenHeight, int maxActorDiameter, int foodDiameter, ActorVisionHelper visionHelper) throws SlickException {
     this.visionHelper = visionHelper;
     this.width = width;
     this.height = height;
+    this.simulationScale = calcScale(width, height, onScreenWidth, onScreenHeight);
     this.foodDiameter = foodDiameter;
     this.image = new Image(width, height);
     this.food = createFood();
@@ -47,15 +55,26 @@ public class SimulationPainterImpl implements SimulationPainter {
     g.setAntiAlias(true);
   }
 
+  private float calcScale(int width, int height, int onScreenWidth, int onScreenHeight) {
+    float simulationScale;
+    if (onScreenWidth > onScreenHeight) {
+      simulationScale = (float) onScreenHeight / (float) height;
+    } else {
+      // Not sure if this should ever happen, but still..
+      simulationScale = (float) width / (float) width;
+    }
+    return simulationScale;
+  }
+
   private Font createFont() {
-    java.awt.Font awtFont = new java.awt.Font("Arial", java.awt.Font.BOLD, 24);
+    java.awt.Font awtFont = new java.awt.Font("Arial", java.awt.Font.BOLD, 14);
     return new TrueTypeFont(awtFont, true);
   }
 
   private Image createFood() throws SlickException {
     Image image = new Image(foodDiameter, foodDiameter);
     Graphics g = image.getGraphics();
-    g.setLineWidth(2);
+    g.setLineWidth(2 / simulationScale);
     g.setColor(Color.green);
     g.drawOval(0, 0, foodDiameter, foodDiameter);
     g.drawLine(foodDiameter / 2, foodDiameter / 2, foodDiameter / 2, 0);
@@ -64,11 +83,11 @@ public class SimulationPainterImpl implements SimulationPainter {
   }
 
   private void paintActor(Graphics g, int diameter, Color color) {
-    g.setLineWidth(5);
+    g.setLineWidth(2 / simulationScale);
 
-    int x = (actor.getWidth() - diameter) / 2;
-    int y = (actor.getHeight() - diameter) / 2;
-    g.setColor(color.brighter(0.5f));
+    int x = (this.actor.getWidth() - diameter) / 2;
+    int y = (this.actor.getHeight() - diameter) / 2;
+    g.setColor(color.darker(0.3f));
     g.fillOval(x, y, diameter, diameter);
     g.setColor(color);
     g.drawOval(x, y, diameter, diameter);
@@ -77,24 +96,52 @@ public class SimulationPainterImpl implements SimulationPainter {
   }
 
   @Override
-  public Image draw(SimulationState state) {
+  public void draw(int screenX, int screenY, SimulationState state) {
     g.setColor(BACKGROUND_COLOR);
     g.fillRect(0, 0, width, height);
     drawFood(g, state.getFood());
     drawActors(g, state.getActors());
+
     g.flush();
-    return image;
+    image.draw(screenX, screenY, simulationScale);
+    drawStrings(screenX, screenY, simulationScale, state);
   }
 
+  private void drawStrings(int screenX, int screenY, float simulationScale, SimulationState state) {
+    for (Actor actor : state.getActors()) {
+      font.drawString((screenX + actor.getRoundedX() + actor.getDiameter() / 2) * simulationScale,
+          (screenY + actor.getRoundedY() + actor.getDiameter() / 2) * simulationScale,
+          String.valueOf(actor.getHealth()) + " hp", Color.white);
+
+      font.drawString((screenX + actor.getRoundedX() + actor.getDiameter() + 5) * simulationScale,
+          (screenY + actor.getRoundedY() - 5) * simulationScale,
+          actor.getId(), Color.white);
+    }
+  }
+
+
   private void drawFood(Graphics g, List<Food> food) {
+    this.lastFood = food;
     g.setColor(Color.orange);
+    g.setLineWidth(2 / simulationScale);
     for (Food f : food) {
       this.food.setRotation((float) (f.getRotation() + 90));
       g.drawImage(this.food, f.getRoundedX(), f.getRoundedY());
+      drawSelectedIfMatch(g, f);
+    }
+
+  }
+
+  private void drawSelectedIfMatch(Graphics g, Physical f) {
+    if (f == selected) {
+      g.setColor(Color.white);
+      g.setLineWidth(2 / simulationScale);
+      g.drawRect((int)f.getX(), (int)f.getY(), f.getDiameter(), f.getDiameter());
     }
   }
 
   private void drawActors(Graphics g, List<Actor> actors) {
+    this.lastActors = actors;
     for (Actor actor : actors) {
       actorGraphics.clear();
       paintActor(actorGraphics, actor.getDiameter(), getActorColor(actor.getHealth()));
@@ -102,16 +149,8 @@ public class SimulationPainterImpl implements SimulationPainter {
       int x = actor.getRoundedX() - ((this.actor.getWidth() - actor.getDiameter()) / 2);
       int y = actor.getRoundedY() - ((this.actor.getHeight() - actor.getDiameter()) / 2);
       g.drawImage(this.actor, x, y);
-      g.setFont(font);
-
-      g.setColor(Color.white);
-      g.drawString(String.valueOf(actor.getHealth()) + " hp", actor.getRoundedX() + actor.getDiameter() / 2, actor.getRoundedY() + actor.getDiameter() / 2);
-      Font previous = g.getFont();
-
-      g.drawString(actor.getId(), actor.getRoundedX() + actor.getDiameter() + 5, actor.getRoundedY() - 5);
-      g.setFont(previous);
+      drawSelectedIfMatch(g, actor);
       drawVision(g, actor);
-
     }
   }
 
@@ -120,6 +159,7 @@ public class SimulationPainterImpl implements SimulationPainter {
   }
 
   private void drawVision(Graphics g, Actor actor) {
+    g.setLineWidth(2 / simulationScale);
     g.setColor(Color.pink);
     int ax = visionHelper.getActorVisionAX(actor);
     int ay = visionHelper.getActorVisionAY(actor);
@@ -130,5 +170,34 @@ public class SimulationPainterImpl implements SimulationPainter {
     g.drawLine(ax, ay, cx, cy);
     g.drawLine(bx, by, cx, cy);
     g.drawLine(ax, ay, bx, by);
+  }
+
+  public MouseListener createMouseListener() {
+    return new MListener();
+  }
+
+  private class MListener implements MouseListener {
+    @Override
+    public void mouseClicked(int button, int x, int y, int clickCount) {
+      x = (int) (x / simulationScale);
+      y = (int) (y / simulationScale);
+      if (Input.MOUSE_LEFT_BUTTON == button) {
+        for (Actor a : lastActors) {
+          if (x > a.getX() && x < a.getX() + a.getDiameter() && y > a.getY() && y < a.getY() + a.getDiameter()) {
+            selected = a;
+            return;
+          }
+        }
+
+        for (Food f : lastFood) {
+          if (x > f.getX() && x < f.getX() + f.getDiameter() && y > f.getY() && y < f.getY() + f.getDiameter()) {
+            selected = f;
+            return;
+          }
+        }
+
+        selected = null;
+      }
+    }
   }
 }

@@ -13,7 +13,6 @@ public class UIImpl implements UI {
   private final int playerWidth;
   private final int playerHeight;
 
-
   private final ButterFlyConfig config;
 
   private final int simulationX;
@@ -21,18 +20,18 @@ public class UIImpl implements UI {
   /**
    * Width of simulation space on screen
    */
-  private final int simulationWidth;
+  private final int simulationScreenWidth;
   /**
    * Height of simulation space on screen
    */
-  private final int simulationHeight;
+  private final int simulationScreenHeight;
 
   public UIImpl(ButterFlyConfig config) {
     this.config = config;
     this.simulationX = 10 + 1;
     this.simulationY = 10 + 1;
-    this.simulationWidth = config.getWindowResolutionWidth() - (simulationX + 10) ;
-    this.simulationHeight = config.getWindowResolutionHeight() - (simulationY + 100);
+    this.simulationScreenWidth = config.getWindowResolutionWidth() - (simulationX + 10) ;
+    this.simulationScreenHeight = config.getWindowResolutionHeight() - (simulationY + 100);
     this.playerX = 10;
     this.playerY = config.getWindowResolutionHeight() - 90;
     this.playerWidth = config.getWindowResolutionWidth() - 100; // TODO unify. The image returned should match it.
@@ -60,16 +59,7 @@ public class UIImpl implements UI {
   }
 
   public void drawSimulation(SimulationPainter painter, SimulationState simulationState) {
-    Image i = painter.draw(simulationState);
-    float simulationScale;
-    if (simulationWidth > simulationHeight) {
-      simulationScale = (float) simulationHeight / (float) i.getHeight();
-    } else {
-      // Not sure if this should ever happen, but still..
-      simulationScale = (float) simulationWidth / (float) i.getWidth();
-    }
-
-    i.draw(simulationX, simulationY, simulationScale);
+    painter.draw(simulationX, simulationY, simulationState);
   }
 
   @Override
@@ -93,8 +83,8 @@ public class UIImpl implements UI {
 
       @Override
       public void mouseClicked(int button, int x, int y, int clickCount) {
-        if (x > simulationX && x < simulationWidth + simulationX
-            && y > simulationY && y < simulationHeight + simulationY) {
+        if (x > simulationX && x < simulationScreenWidth + simulationX
+            && y > simulationY && y < simulationScreenHeight + simulationY) {
           if (simulation != null) {
             simulation.mouseClicked(button, x - simulationX, y - simulationY, clickCount);
           }
@@ -113,6 +103,14 @@ public class UIImpl implements UI {
         }
       }
     };
+  }
+
+  public int getSimulationScreenWidth() {
+    return simulationScreenWidth;
+  }
+
+  public int getSimulationScreenHeight() {
+    return simulationScreenHeight;
   }
 
   private void drawFrameCounter(Graphics g, int totalFrames) {

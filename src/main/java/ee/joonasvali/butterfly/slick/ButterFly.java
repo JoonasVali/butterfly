@@ -17,6 +17,7 @@ import ee.joonasvali.butterfly.ui.SimulationPainterImpl;
 import ee.joonasvali.butterfly.ui.SimulationPlayerPainter;
 import ee.joonasvali.butterfly.ui.SimulationPlayerPainterImpl;
 import ee.joonasvali.butterfly.ui.UI;
+import ee.joonasvali.butterfly.ui.UIImpl;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -75,7 +76,8 @@ public class ButterFly extends BasicGame {
     int width = config.getWindowResolutionWidth();
     int simWidth = simulationSizeMultiplier * width;
     int simHeight = simulationSizeMultiplier * height;
-    SimulationPainterImpl painter = new SimulationPainterImpl(simWidth, simHeight, config.getActorDiameter(), config.getFoodDiameter(), visionHelper);
+    SimulationPainterImpl painter = new SimulationPainterImpl(simWidth, simHeight, ((UIImpl)ui).getSimulationScreenWidth(),
+        ((UIImpl)ui).getSimulationScreenHeight(), config.getActorDiameter(), config.getFoodDiameter(), visionHelper);
     this.container = new SimulationContainer(
         runner,
         createInitialState(simWidth, simHeight),
@@ -94,7 +96,12 @@ public class ButterFly extends BasicGame {
 
     MouseDispatcher dispatcher = this.ui.getMouseDispatcher();
     dispatcher.registerMouseListener(((SimulationPlayerPainterImpl)playerPainter).createMouseListener(player), MouseDispatcher.AreaImpl.PLAYER);
+    dispatcher.registerMouseListener(createSimulationMouseListener(), MouseDispatcher.AreaImpl.SIMULATION);
     mouseListenerList.add(dispatcher);
+  }
+
+  private MouseListener createSimulationMouseListener() {
+    return ((SimulationPainterImpl)container.getPainter()).createMouseListener();
   }
 
   private SimulationState createInitialState(int simWidth, int simHeight) {
