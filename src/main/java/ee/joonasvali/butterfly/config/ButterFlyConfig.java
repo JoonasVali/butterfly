@@ -23,6 +23,8 @@ public class ButterFlyConfig {
   private int actorsInSimulation;
   @Value("${actor.initialhealth}")
   private int actorInitialHealth;
+  @Value("${simulation.length}")
+  private int framesInSimulation;
 
   public int getWindowResolutionWidth() {
     return windowResolutionWidth;
@@ -62,5 +64,9 @@ public class ButterFlyConfig {
 
   public int getActorInitialHealth() {
     return actorInitialHealth;
+  }
+
+  public int getFramesInSimulation() {
+    return framesInSimulation;
   }
 }

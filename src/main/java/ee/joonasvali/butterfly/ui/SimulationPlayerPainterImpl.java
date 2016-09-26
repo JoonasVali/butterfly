@@ -20,18 +20,18 @@ public class SimulationPlayerPainterImpl implements SimulationPlayerPainter {
   private static final Color INACTIVE_RED = new Color(100, 0, 0);
   private static final Color INACTIVE_WHITE = new Color(150, 150, 150);
 
-  public static final int LINE_X = 15;
-  public static final int LINE_Y = 15;
   public static final int CONTROLS_X = 30;
   public static final int CONTROLS_Y = 45;
   public static final int BUTTON_STANDARD_DIMENSION = 20;
 
   private final Image image;
   private final Graphics g;
+  private final int trackWidth;
 
   public SimulationPlayerPainterImpl(int windowWidth, int windowHeight) throws SlickException {
     this.image = new Image(windowWidth - 100, 90);
     this.g = image.getGraphics();
+    trackWidth = image.getWidth() - 30;
 
   }
 
@@ -74,10 +74,10 @@ public class SimulationPlayerPainterImpl implements SimulationPlayerPainter {
   }
 
   public void drawTrackAt(int x, int y, Graphics g, SimulationPlayer player, boolean active) {
-    int frames = player.getTotalFrames();
 
     g.setColor(active ? ACTIVE_RED : INACTIVE_RED);
-    int breakPoint = player.getCurrentFrame();
+    int breakPoint = (int)(trackWidth * (double)player.getCurrentFrame() / (double)player.getTotalFrames());
+
 
     // Draw red line
     g.drawLine(x + 5, y + 5, x + 5 + breakPoint, y + 5);
@@ -85,8 +85,8 @@ public class SimulationPlayerPainterImpl implements SimulationPlayerPainter {
 
     // Draw white line
     g.setColor(active ? ACTIVE_LINE_LIGHT : INACTIVE_LINE_LIGHT);
-    g.drawLine(x + 5 + breakPoint, y + 5, x + 5 + frames - 1, y + 5);
-    g.drawLine(x + 5 + breakPoint, y + 5 + 1, x + 5 + frames - 1, y + 5 + 1);
+    g.drawLine(x + 5 + breakPoint, y + 5, x + 5 + trackWidth - 1, y + 5);
+    g.drawLine(x + 5 + breakPoint, y + 5 + 1, x + 5 + trackWidth - 1, y + 5 + 1);
 
     g.setColor(active ? ACTIVE_WHITE : INACTIVE_WHITE);
     for (int i = 0; i < 5; i++) {
@@ -118,10 +118,12 @@ public class SimulationPlayerPainterImpl implements SimulationPlayerPainter {
         }
       }
 
-      x = x - LINE_X;
-      y = y - LINE_Y;
-      if (x < player.getTotalFrames() && x >= 0 && y < 30) {
-        player.setFrameIndex(x);
+
+      if (x < trackWidth + 10 && x >= 10) {
+        x -= 10;
+
+        int index = (int) (((double)player.getTotalFrames() / (double) trackWidth) * x);
+        player.setFrameIndex(index);
       }
     }
   }

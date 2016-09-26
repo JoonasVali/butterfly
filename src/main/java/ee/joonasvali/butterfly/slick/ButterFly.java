@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ButterFly extends BasicGame {
-  public static final int TOTAL_FRAMES_IN_SIMULATION = 1000;
   public static final int TOTAL_TRACKS = 2;
 
   private final int simulationSizeMultiplier;
@@ -63,7 +62,7 @@ public class ButterFly extends BasicGame {
     simulationSizeMultiplier = config.getSimulationSizeMultiplier();
     initialHealth = config.getActorInitialHealth();
     actorsInSimulation = config.getActorsInSimulation();
-    clock = new ClockImpl(TOTAL_FRAMES_IN_SIMULATION);
+    clock = new ClockImpl(config.getFramesInSimulation());
     clockListener = ((ClockImpl)clock).getListener();
   }
 
@@ -85,7 +84,7 @@ public class ButterFly extends BasicGame {
 
     this.player = new SimulationPlayer(
         new SimulationContainer[]{this.container, this.container.copyTemp()}, // Currently two tracks supported
-        TOTAL_FRAMES_IN_SIMULATION, clock
+        config.getFramesInSimulation(), clock
     );
 
     this.player.calculateSimulation();
