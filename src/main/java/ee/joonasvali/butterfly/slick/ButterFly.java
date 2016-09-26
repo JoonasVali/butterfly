@@ -101,7 +101,7 @@ public class ButterFly extends BasicGame {
   }
 
   private MouseListener createSimulationMouseListener() {
-    return ((SimulationPainterImpl)container.getPainter()).createMouseListener();
+    return ((SimulationPainterImpl)container.getPainter()).createMouseListener(clock);
   }
 
   private SimulationState createInitialState(int simWidth, int simHeight) {
@@ -199,7 +199,7 @@ public class ButterFly extends BasicGame {
   }
 
   public String getRandomId() {
-    String[] firstNames = {"JAMES", "JOHN", "ROBERT", "MICHAEL", "WILLIAM", "DAVID", "RICHARD", "CHARLES", "JOSEPH", "JOFFREY"};
+    String[] firstNames = {"JAMES", "JOHN", "ROBERT", "MICHAEL", "WILLIAM", "DAVID", "RICHARD", "CHARLES", "JOSEPH", "JOFFREY", "BRAN", "LEIA", "LUKE"};
     String[] lastNames = {"GATES", "DOE", "HOLMES", "PARK", "SEAGULL", "BEAR", "TARGARYEN", "SNOW", "LANNISTER", "SMITH", "STARK", "BARATHEON"};
     return firstNames[((int) (Math.random() * firstNames.length))] + " " + lastNames[((int) (Math.random() * lastNames.length))];
   }

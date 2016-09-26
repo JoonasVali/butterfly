@@ -7,4 +7,5 @@ public interface Clock {
   void passTime(int i);
   int getFrameIndex();
   void setFrameIndex(int index);
+  void pause();
 }

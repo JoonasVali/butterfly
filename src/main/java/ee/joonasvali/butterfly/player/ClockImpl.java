@@ -43,7 +43,7 @@ public class ClockImpl implements Clock {
           timeInGame = 0;
 
           if (forward) {
-            clock = 0;
+            pause();
           } else if (clock == 0) {
             clock = CLOCK;
           } else if (clock == CLOCK) {
@@ -56,6 +56,10 @@ public class ClockImpl implements Clock {
         }
       }
     };
+  }
+
+  public void pause() {
+    clock = 0;
   }
 
   public void passTime(int i) {

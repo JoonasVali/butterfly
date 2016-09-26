@@ -1,5 +1,7 @@
 package ee.joonasvali.butterfly.ui;
 
+import ee.joonasvali.butterfly.player.Clock;
+import ee.joonasvali.butterfly.player.ClockImpl;
 import ee.joonasvali.butterfly.simulation.Food;
 import ee.joonasvali.butterfly.simulation.Physical;
 import ee.joonasvali.butterfly.simulation.actor.Actor;
@@ -172,13 +174,20 @@ public class SimulationPainterImpl implements SimulationPainter {
     g.drawLine(ax, ay, bx, by);
   }
 
-  public MouseListener createMouseListener() {
-    return new MListener();
+  public MouseListener createMouseListener(Clock clock) {
+    return new MListener(clock);
   }
 
   private class MListener implements MouseListener {
+    private final Clock clock;
+
+    public MListener(Clock clock) {
+      this.clock = clock;
+    }
+
     @Override
     public void mouseClicked(int button, int x, int y, int clickCount) {
+      clock.pause();
       x = (int) (x / simulationScale);
       y = (int) (y / simulationScale);
       if (Input.MOUSE_LEFT_BUTTON == button) {
@@ -190,7 +199,7 @@ public class SimulationPainterImpl implements SimulationPainter {
         }
 
         for (Food f : lastFood) {
-          if (x > f.getX() && x < f.getX() + f.getDiameter() && y > f.getY() && y < f.getY() + f.getDiameter()) {
+          if (x >= f.getX() && x <= f.getX() + f.getDiameter() && y >= f.getY() && y <= f.getY() + f.getDiameter()) {
             selected = f;
             return;
           }
