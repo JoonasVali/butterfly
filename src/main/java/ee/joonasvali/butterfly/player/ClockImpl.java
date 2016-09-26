@@ -17,6 +17,7 @@ public class ClockImpl implements Clock {
   private volatile int clock = CLOCK;
   private volatile long timeInGame;
   private volatile boolean forward = true;
+  private volatile boolean pause;
 
 
   public ClockImpl(int maxFrame) {
@@ -24,46 +25,56 @@ public class ClockImpl implements Clock {
     this.listener = new KeyBoardClockListener() {
       @Override
       public void keyReleased(int keycode) {
+        if (keycode == Input.KEY_SPACE) {
+          pause = !pause;
+        }
+
         if (keycode == Input.KEY_3) {
           forward = true;
+          pause = false;
           clock = CLOCK_FASTEST;
         }
 
         if (keycode == Input.KEY_2) {
           forward = true;
+          pause = false;
           clock = CLOCK_FAST;
         }
 
         if (keycode == Input.KEY_1) {
           forward = true;
+          pause = false;
           clock = CLOCK;
         }
 
         if (keycode == Input.KEY_0) {
           timeInGame = 0;
 
-          if (forward) {
-            pause();
-          } else if (clock == 0) {
+          if (forward || pause) {
             clock = CLOCK;
           } else if (clock == CLOCK) {
             clock = CLOCK_FAST;
           } else if (clock == CLOCK_FAST) {
             clock = CLOCK_FASTEST;
           }
-
+          pause = false;
           forward = false;
         }
       }
     };
   }
 
-  public void pause() {
-    clock = 0;
+  public void pause(boolean pause) {
+    this.pause = pause;
+  }
+
+  @Override
+  public boolean isPause() {
+    return pause;
   }
 
   public void passTime(int i) {
-    if (clock == 0) {
+    if (pause) {
       // pause
       return;
     }

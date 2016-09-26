@@ -35,7 +35,7 @@ public class UIImpl implements UI {
     this.playerX = 10;
     this.playerY = config.getWindowResolutionHeight() - 90;
     this.playerWidth = config.getWindowResolutionWidth() - 100; // TODO unify. The image returned should match it.
-    this.playerHeight = 50; // TODO unify. The image returned should match it.
+    this.playerHeight = 100; // TODO unify. The image returned should match it.
   }
 
   @Override

@@ -12,7 +12,6 @@ public class SimulationPlayer {
   private final SimulationContainer[] tracks;
   private final int totalFrames;
   private final Clock clock;
-  private int frameIndex;
   private int track;
 
   public SimulationPlayer(SimulationContainer[] containers, int totalFrames, Clock clock) {
@@ -65,5 +64,9 @@ public class SimulationPlayer {
 
   private SimulationContainer getContainer() {
     return tracks[track];
+  }
+
+  public Clock getClock() {
+    return clock;
   }
 }

@@ -1,5 +1,6 @@
 package ee.joonasvali.butterfly.ui;
 
+import ee.joonasvali.butterfly.player.Clock;
 import ee.joonasvali.butterfly.player.SimulationPlayer;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
@@ -21,6 +22,9 @@ public class SimulationPlayerPainterImpl implements SimulationPlayerPainter {
 
   public static final int LINE_X = 15;
   public static final int LINE_Y = 15;
+  public static final int CONTROLS_X = 30;
+  public static final int CONTROLS_Y = 45;
+  public static final int BUTTON_STANDARD_DIMENSION = 20;
 
   private final Image image;
   private final Graphics g;
@@ -38,18 +42,35 @@ public class SimulationPlayerPainterImpl implements SimulationPlayerPainter {
     g.drawRect(10, 1, image.getWidth() - 10 * 2, image.getHeight() - 15);
     drawTrackAt(10, 10, g, player, player.getTrackPlayed() == 0);
     drawTrackAt(10, 30, g, player, player.getTrackPlayed() == 1);
-    drawControlsAt(30, 45, g);
+    drawControlsAt(player.getClock(), CONTROLS_X, CONTROLS_Y, g);
     g.flush();
     return image;
   }
 
-  private void drawControlsAt(int x, int y, Graphics g) {
+  private void drawControlsAt(Clock clock, int x, int y, Graphics g) {
     g.setColor(Color.white);
     // Draw play
-    int length = 20;
-    g.drawLine(x, y, x + length, y + 10);
-    g.drawLine(x, y, x, y + 20);
-    g.drawLine(x, y + 20, x + length, y + 10);
+    if (clock.isPause()) {
+      int length = 20;
+      g.drawLine(x, y, x + length, y + 10);
+      g.drawLine(x, y, x, y + 20);
+      g.drawLine(x, y + 20, x + length, y + 10);
+    } else {
+
+      int width = 7;
+      int height = BUTTON_STANDARD_DIMENSION;
+      int space = 5;
+      // horizontals
+      g.drawLine(x, y, x + width, y);
+      g.drawLine(x, y + height, x + width, y + height);
+      g.drawLine(x + width + space, y, x + width * 2 + space, y);
+      g.drawLine(x + width + space, y + height, x + width * 2 + space, y + height);
+      // verticals
+      g.drawLine(x, y, x, y + height);
+      g.drawLine(x + width, y, x + width, y + height);
+      g.drawLine(x + width + space, y, x + width + space, y + height);
+      g.drawLine(x + width * 2 + space, y, x + width * 2 + space, y + height);
+    }
   }
 
   public void drawTrackAt(int x, int y, Graphics g, SimulationPlayer player, boolean active) {
@@ -74,22 +95,32 @@ public class SimulationPlayerPainterImpl implements SimulationPlayerPainter {
   }
 
 
-  public MouseListener createMouseListener(SimulationPlayer player) {
-    return new PlayerListener(player);
+  public MouseListener createMouseListener(SimulationPlayer player, Clock clock) {
+    return new PlayerListener(player, clock);
   }
 
   private class PlayerListener implements MouseListener {
     private final SimulationPlayer player;
+    private final Clock clock;
 
-    public PlayerListener(SimulationPlayer player) {
+    public PlayerListener(SimulationPlayer player, Clock clock) {
       this.player = player;
+      this.clock = clock;
     }
 
     @Override
     public void mouseClicked(int button, int x, int y, int clickCount) {
+      if (x > CONTROLS_X && y > CONTROLS_Y && x < CONTROLS_X + BUTTON_STANDARD_DIMENSION && y < CONTROLS_Y + BUTTON_STANDARD_DIMENSION) {
+        if (clock.isPause()) {
+          clock.pause(false);
+        } else {
+          clock.pause(true);
+        }
+      }
+
       x = x - LINE_X;
       y = y - LINE_Y;
-      if (x < player.getTotalFrames() && x >= 0) {
+      if (x < player.getTotalFrames() && x >= 0 && y < 30) {
         player.setFrameIndex(x);
       }
     }

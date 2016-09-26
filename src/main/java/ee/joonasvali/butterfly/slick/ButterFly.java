@@ -29,9 +29,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Demo class to start up the slick, replace it with what ever you need.
- */
 public class ButterFly extends BasicGame {
   public static final int TOTAL_FRAMES_IN_SIMULATION = 1000;
   public static final int TOTAL_TRACKS = 2;
@@ -95,7 +92,7 @@ public class ButterFly extends BasicGame {
     this.playerPainter = new SimulationPlayerPainterImpl(config.getWindowResolutionWidth(), config.getWindowResolutionHeight());
 
     MouseDispatcher dispatcher = this.ui.getMouseDispatcher();
-    dispatcher.registerMouseListener(((SimulationPlayerPainterImpl)playerPainter).createMouseListener(player), MouseDispatcher.AreaImpl.PLAYER);
+    dispatcher.registerMouseListener(((SimulationPlayerPainterImpl)playerPainter).createMouseListener(player, clock), MouseDispatcher.AreaImpl.PLAYER);
     dispatcher.registerMouseListener(createSimulationMouseListener(), MouseDispatcher.AreaImpl.SIMULATION);
     mouseListenerList.add(dispatcher);
   }

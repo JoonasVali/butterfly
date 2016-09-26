@@ -187,7 +187,7 @@ public class SimulationPainterImpl implements SimulationPainter {
 
     @Override
     public void mouseClicked(int button, int x, int y, int clickCount) {
-      clock.pause();
+      clock.pause(true);
       x = (int) (x / simulationScale);
       y = (int) (y / simulationScale);
       if (Input.MOUSE_LEFT_BUTTON == button) {
