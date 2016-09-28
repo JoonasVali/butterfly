@@ -124,8 +124,15 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
   private ArrayList<ActorBuilder> modifyActors(List<Actor> actors, List<Food> food, int width, int height) {
     ArrayList<ActorBuilder> newActors = new ArrayList<>(actors.size());
     for (Actor actor : actors) {
-      newActors.add(act(actor, actors, food, width, height));
+      ActorBuilder builder = act(actor, actors, food, width, height);
+      newActors.add(builder);
+      if (builder.getHealth() > builder.getDiameter() * 5) {
+        builder.setHealth(builder.getHealth() / 2);
+        // Make a clone
+        newActors.add(new ActorBuilder(builder.build()));
+      }
     }
+
     modifyCollisions(newActors);
     return newActors;
   }
