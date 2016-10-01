@@ -6,6 +6,8 @@ import ee.joonasvali.butterfly.config.PhysicsConfig;
 import ee.joonasvali.butterfly.simulation.PhysicsRunner;
 import ee.joonasvali.butterfly.simulation.PhysicsRunnerImpl;
 import ee.joonasvali.butterfly.simulation.actor.vision.ActorVisionHelper;
+import ee.joonasvali.butterfly.simulation.generator.DefaultInitialStateGenerator;
+import ee.joonasvali.butterfly.simulation.generator.InitialStateGenerator;
 import ee.joonasvali.butterfly.slick.ButterFly;
 import ee.joonasvali.butterfly.ui.UI;
 import ee.joonasvali.butterfly.ui.UIImpl;
@@ -30,6 +32,13 @@ public class SpringConfig {
     return new PhysicsConfig();
   }
 
+
+  @Bean
+  public InitialStateGenerator getInitialStateGenerator(ButterFlyConfig config) {
+    return new DefaultInitialStateGenerator(config);
+  }
+
+
   @Bean
   public ActorVisionHelper getActorVisionHelper(ButterFlyConfig config) {
     return new ActorVisionHelper(config);
@@ -41,8 +50,8 @@ public class SpringConfig {
   }
 
   @Bean
-  public ButterFly getButterFly(UI ui, ButterFlyConfig config, PhysicsRunner runner, ActorVisionHelper helper) {
-    return new ButterFly(ui, config, runner, helper);
+  public ButterFly getButterFly(UI ui, ButterFlyConfig config, PhysicsRunner runner, InitialStateGenerator generator, ActorVisionHelper helper) {
+    return new ButterFly(ui, config, runner, generator, helper);
   }
 
   @Bean

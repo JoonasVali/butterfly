@@ -12,6 +12,7 @@ import ee.joonasvali.butterfly.simulation.PhysicsRunner;
 import ee.joonasvali.butterfly.simulation.SimulationContainer;
 import ee.joonasvali.butterfly.simulation.SimulationState;
 import ee.joonasvali.butterfly.simulation.actor.vision.ActorVisionHelper;
+import ee.joonasvali.butterfly.simulation.generator.InitialStateGenerator;
 import ee.joonasvali.butterfly.ui.MouseDispatcher;
 import ee.joonasvali.butterfly.ui.MouseListener;
 import ee.joonasvali.butterfly.ui.SelectionListener;
@@ -32,11 +33,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ButterFly extends BasicGame {
-  public static final int TOTAL_TRACKS = 2;
+  private static final int TOTAL_TRACKS = 2;
 
   private final int simulationSizeMultiplier;
-  private final int actorsInSimulation;
-  private final int initialHealth;
 
   private final UI ui;
   private final ButterFlyConfig config;
@@ -44,6 +43,7 @@ public class ButterFly extends BasicGame {
   private final ActorVisionHelper visionHelper;
   private final Clock clock;
   private final KeyBoardClockListener clockListener;
+  private final InitialStateGenerator generator;
 
   private volatile SimulationContainer[] containers = new SimulationContainer[2];
   private volatile SimulationPlayer player;
@@ -56,15 +56,14 @@ public class ButterFly extends BasicGame {
   private volatile boolean shutdown;
   private volatile Physical selected;
 
-  public ButterFly(UI ui, ButterFlyConfig config, PhysicsRunner runner, ActorVisionHelper visionHelper) {
+  public ButterFly(UI ui, ButterFlyConfig config, PhysicsRunner runner, InitialStateGenerator generator, ActorVisionHelper visionHelper) {
     super("ButterFly");
+    this.generator = generator;
     this.runner = runner;
     this.visionHelper = visionHelper;
     this.ui = ui;
     this.config = config;
     simulationSizeMultiplier = config.getSimulationSizeMultiplier();
-    initialHealth = config.getActorInitialHealth();
-    actorsInSimulation = config.getActorsInSimulation();
     clock = new ClockImpl(config.getFramesInSimulation());
     clockListener = ((ClockImpl)clock).getListener();
   }
@@ -115,28 +114,7 @@ public class ButterFly extends BasicGame {
   }
 
   private SimulationState createInitialState(int simWidth, int simHeight) {
-    return new SimulationState(0, getActors(simWidth, simHeight), getFood(simWidth, simHeight), simWidth, simHeight);
-  }
-
-  private ArrayList<Food> getFood(int simWidth, int simHeight) {
-    ArrayList<Food> food = new ArrayList<>();
-    for (int i = 0; i < (simWidth * simHeight) / 10000; i++) {
-      food.add(createRandomFood(simWidth, simHeight));
-    }
-    return food;
-  }
-
-  private Food createRandomFood(int simWidth, int simHeight) {
-    return new Food(
-        (int) (Math.random() * simWidth),
-        (int) (Math.random() * simHeight),
-        config.getFoodDiameter(),
-        Math.random() * 360,
-        0,
-        0,
-        0,
-        1500
-    );
+    return generator.createInitialState(simWidth, simHeight);
   }
 
   @Override
@@ -172,9 +150,14 @@ public class ButterFly extends BasicGame {
     log.info("keycode: " + key + " pressed ");
 
     if (key == Input.KEY_DELETE) {
-      Physical selected = this.selected;
-      if (selected != null) {
-        removePhysical(selected);
+      //don't allow changes to first track
+      if (player.getTrackPlayed() != 0) {
+        Physical selected = this.selected;
+        if (selected != null) {
+          removePhysical(selected);
+        }
+      } else {
+        ui.displayWarning("Switch to other track (press 'T') to make changes, this is the original track for comparison.");
       }
     }
 
@@ -208,35 +191,6 @@ public class ButterFly extends BasicGame {
       SimulationState newState = new SimulationState(state.getFrameNumber(), state.getActors(), food, state.getWidth(), state.getHeight());
       getActiveTrackContainer().alterState(newState);
     }
-  }
-
-  public ArrayList<Actor> getActors(int simWidth, int simHeight) {
-    ArrayList<Actor> actors = new ArrayList<>();
-    for (int i = 0; i < actorsInSimulation; i++) {
-      actors.add(createRandomActor(simWidth - config.getActorDiameter(), simHeight - config.getActorDiameter()));
-    }
-    return actors;
-  }
-
-  private Actor createRandomActor(int simWidth, int simHeight) {
-    return new Actor(
-        getRandomId(),
-        (int) (Math.random() * simWidth),
-        (int) (Math.random() * simHeight),
-        (int) (50 + (Math.random() * (config.getActorDiameter() - 50))),
-        Math.random() * 360,
-        0,
-        0,
-        0,
-        initialHealth,
-        1 + Math.random() * 3
-    );
-  }
-
-  public String getRandomId() {
-    String[] firstNames = {"JAMES", "JOHN", "ROBERT", "MICHAEL", "WILLIAM", "DAVID", "RICHARD", "CHARLES", "JOSEPH", "JOFFREY", "BRAN", "LEIA", "LUKE"};
-    String[] lastNames = {"GATES", "DOE", "HOLMES", "PARK", "SEAGULL", "BEAR", "TARGARYEN", "SNOW", "LANNISTER", "SMITH", "STARK", "BARATHEON"};
-    return firstNames[((int) (Math.random() * firstNames.length))] + " " + lastNames[((int) (Math.random() * lastNames.length))];
   }
 
 }
