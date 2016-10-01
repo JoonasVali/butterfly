@@ -78,7 +78,7 @@ public class ButterFly extends BasicGame {
         ((UIImpl)ui).getSimulationScreenHeight(), config.getActorDiameter(), config.getFoodDiameter(), visionHelper);
     SimulationContainer container = new SimulationContainer(
         runner,
-        createInitialState(simWidth, simHeight),
+        generator.createInitialState(simWidth, simHeight),
         painter,
         simWidth,
         simHeight
@@ -113,10 +113,6 @@ public class ButterFly extends BasicGame {
     return containers[player.getTrackPlayed()];
   }
 
-  private SimulationState createInitialState(int simWidth, int simHeight) {
-    return generator.createInitialState(simWidth, simHeight);
-  }
-
   @Override
   public void update(GameContainer gameContainer, int i) throws SlickException {
     if (shutdown) {
@@ -128,7 +124,6 @@ public class ButterFly extends BasicGame {
 
   @Override
   public void render(GameContainer gameContainer, Graphics graphics) throws SlickException {
-    graphics.drawString("Hello world!", 10, 20);
     ui.drawUI(graphics, player, playerPainter);
     ui.drawSimulation(getActiveTrackContainer().getPainter(), player.getState());
     ui.drawUITop(graphics, player.getCurrentFrame(), player.getTrackPlayed());

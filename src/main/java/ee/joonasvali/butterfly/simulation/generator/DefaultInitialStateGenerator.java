@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * @author Joonas Vali October 2016
  */
 public class DefaultInitialStateGenerator implements InitialStateGenerator {
-  public static final int FOOD_HEALTH_RECOVER_MODIFIER = 2500;
+  private static final int FOOD_HEALTH_RECOVER_MODIFIER = 2500;
   private final int actorsInSimulation;
   private final int initialHealth;
   private final int actorDiameter;
@@ -29,7 +29,7 @@ public class DefaultInitialStateGenerator implements InitialStateGenerator {
     return new SimulationState(0, getActors(simWidth, simHeight), getFood(simWidth, simHeight), simWidth, simHeight);
   }
 
-  public ArrayList<Actor> getActors(int simWidth, int simHeight) {
+  private ArrayList<Actor> getActors(int simWidth, int simHeight) {
     ArrayList<Actor> actors = new ArrayList<>();
     for (int i = 0; i < actorsInSimulation; i++) {
       actors.add(createRandomActor(simWidth - actorDiameter, simHeight - actorDiameter));
@@ -52,7 +52,7 @@ public class DefaultInitialStateGenerator implements InitialStateGenerator {
     );
   }
 
-  public String getRandomId() {
+  private String getRandomId() {
     String[] firstNames = {"JAMES", "JOHN", "ROBERT", "MICHAEL", "WILLIAM", "DAVID", "RICHARD", "CHARLES", "JOSEPH", "JOFFREY", "BRAN", "LEIA", "LUKE"};
     String[] lastNames = {"GATES", "DOE", "HOLMES", "PARK", "SEAGULL", "BEAR", "TARGARYEN", "SNOW", "LANNISTER", "SMITH", "STARK", "BARATHEON"};
     return firstNames[((int) (Math.random() * firstNames.length))] + " " + lastNames[((int) (Math.random() * lastNames.length))];
