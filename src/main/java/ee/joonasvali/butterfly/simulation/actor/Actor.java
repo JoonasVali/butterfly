@@ -6,6 +6,7 @@ import ee.joonasvali.butterfly.simulation.actor.vision.VisibleActor;
 import ee.joonasvali.butterfly.simulation.actor.vision.VisibleFood;
 
 import java.util.List;
+import java.util.Random;
 
 /**
  * @author Joonas Vali July 2016
@@ -45,7 +46,7 @@ public class Actor extends PhysicalImpl {
       }
       if (nearest == null) {
 
-        return new Action(speed / 2, -3);
+        return new Action(speed / 2, 0.2);
       }
       double rot = nearest.getRelativeRotationToObject();
       if (Math.abs(rot) < 5) {
@@ -57,5 +58,12 @@ public class Actor extends PhysicalImpl {
 
   public String getId() {
     return id;
+  }
+
+  /**
+   * @return predictable seed random generator from final values
+   */
+  public Random getPredictableRandom() {
+    return new Random((long)(getX() * getY() * getDiameter() / getHealth() * getId().hashCode() / getSpeed() * getXImpulse() * getYImpulse()));
   }
 }

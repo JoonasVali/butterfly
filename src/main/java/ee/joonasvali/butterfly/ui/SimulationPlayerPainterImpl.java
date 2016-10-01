@@ -2,6 +2,7 @@ package ee.joonasvali.butterfly.ui;
 
 import ee.joonasvali.butterfly.player.Clock;
 import ee.joonasvali.butterfly.player.SimulationPlayer;
+import ee.joonasvali.butterfly.simulation.SimulationContainer;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -21,7 +22,7 @@ public class SimulationPlayerPainterImpl implements SimulationPlayerPainter {
   private static final Color INACTIVE_WHITE = new Color(150, 150, 150);
 
   public static final int CONTROLS_X = 30;
-  public static final int CONTROLS_Y = 45;
+  public static final int CONTROLS_Y = 50;
   public static final int BUTTON_STANDARD_DIMENSION = 20;
 
   private final Image image;
@@ -40,8 +41,8 @@ public class SimulationPlayerPainterImpl implements SimulationPlayerPainter {
     g.clear();
     g.setColor(Color.gray);
     g.drawRect(10, 1, image.getWidth() - 10 * 2, image.getHeight() - 15);
-    drawTrackAt(10, 10, g, player, player.getTrackPlayed() == 0);
-    drawTrackAt(10, 30, g, player, player.getTrackPlayed() == 1);
+    drawTrackAt(10, 10, g, player, player.getContainer(0), player.getTrackPlayed() == 0);
+    drawTrackAt(10, 30, g, player, player.getContainer(1), player.getTrackPlayed() == 1);
     drawControlsAt(player.getClock(), CONTROLS_X, CONTROLS_Y, g);
     g.flush();
     return image;
@@ -73,7 +74,7 @@ public class SimulationPlayerPainterImpl implements SimulationPlayerPainter {
     }
   }
 
-  public void drawTrackAt(int x, int y, Graphics g, SimulationPlayer player, boolean active) {
+  public void drawTrackAt(int x, int y, Graphics g, SimulationPlayer player, SimulationContainer container, boolean active) {
 
     g.setColor(active ? ACTIVE_RED : INACTIVE_RED);
     int breakPoint = (int)(trackWidth * (double)player.getCurrentFrame() / (double)player.getTotalFrames());
@@ -91,6 +92,14 @@ public class SimulationPlayerPainterImpl implements SimulationPlayerPainter {
     g.setColor(active ? ACTIVE_WHITE : INACTIVE_WHITE);
     for (int i = 0; i < 5; i++) {
       g.drawLine(x + 5 + breakPoint + i, y + 5, x + 5 + breakPoint + i, y + 10);
+    }
+
+    // Draw altered state markers
+    g.setColor(Color.cyan);
+    for (Integer index : container.getAlteredStates()) {
+      int screenX = x + 5 + (int)(trackWidth * (double)index / (double)player.getTotalFrames());
+      g.drawLine(screenX, y + 5 + 2, screenX, y + 15);
+      g.drawLine(screenX + 1, y + 5 + 2, screenX + 1, y + 15);
     }
   }
 

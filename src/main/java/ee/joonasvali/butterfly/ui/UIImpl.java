@@ -25,6 +25,7 @@ public class UIImpl implements UI {
    * Height of simulation space on screen
    */
   private final int simulationScreenHeight;
+  private volatile WarningMessage warning;
 
   public UIImpl(ButterFlyConfig config) {
     this.config = config;
@@ -51,6 +52,15 @@ public class UIImpl implements UI {
   public void drawUITop(Graphics g, int totalFrames, int trackPlayed) {
     drawFrameCounter(g, totalFrames);
     drawTrack(g, trackPlayed);
+    drawWarningIfPresent(g, warning);
+  }
+
+  private void drawWarningIfPresent(Graphics g, WarningMessage warning) {
+    if (warning == null || warning.isExpired()) {
+      return;
+    }
+    g.setColor(Color.yellow);
+    g.drawString(warning.getMessage(), 250, 20);
   }
 
   private void drawTrack(Graphics g, int trackPlayed) {
@@ -103,6 +113,11 @@ public class UIImpl implements UI {
         }
       }
     };
+  }
+
+  @Override
+  public void displayWarning(String message) {
+    warning = new WarningMessage(message);
   }
 
   public int getSimulationScreenWidth() {

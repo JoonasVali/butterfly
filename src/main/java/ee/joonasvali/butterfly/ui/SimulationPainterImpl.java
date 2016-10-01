@@ -168,17 +168,17 @@ public class SimulationPainterImpl implements SimulationPainter {
   }
 
   private void drawVision(Graphics g, Actor actor) {
-    g.setLineWidth(2 / simulationScale);
-    g.setColor(Color.pink);
-    int ax = visionHelper.getActorVisionAX(actor);
-    int ay = visionHelper.getActorVisionAY(actor);
-    int bx = visionHelper.getActorVisionBX(actor);
-    int by = visionHelper.getActorVisionBY(actor);
-    int cx = visionHelper.getActorVisionCX(actor);
-    int cy = visionHelper.getActorVisionCY(actor);
-    g.drawLine(ax, ay, cx, cy);
-    g.drawLine(bx, by, cx, cy);
-    g.drawLine(ax, ay, bx, by);
+//    g.setLineWidth(2 / simulationScale);
+//    g.setColor(Color.pink);
+//    int ax = visionHelper.getActorVisionAX(actor);
+//    int ay = visionHelper.getActorVisionAY(actor);
+//    int bx = visionHelper.getActorVisionBX(actor);
+//    int by = visionHelper.getActorVisionBY(actor);
+//    int cx = visionHelper.getActorVisionCX(actor);
+//    int cy = visionHelper.getActorVisionCY(actor);
+//    g.drawLine(ax, ay, cx, cy);
+//    g.drawLine(bx, by, cx, cy);
+//    g.drawLine(ax, ay, bx, by);
   }
 
   public MouseListener createMouseListener(Clock clock) {

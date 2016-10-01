@@ -3,6 +3,8 @@ package ee.joonasvali.butterfly.simulation;
 import ee.joonasvali.butterfly.ui.SimulationPainter;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Joonas Vali July 2016
@@ -13,14 +15,22 @@ public class SimulationContainer {
   private final int height;
   private final PhysicsRunner runner;
   private final ArrayList<SimulationState> states;
+  private final ArrayList<Integer> alteredStates;
+  private final SimulationState inception;
 
-  public SimulationContainer(PhysicsRunner runner, SimulationState genesis, SimulationPainter painter, int width, int height) {
+  public SimulationContainer(PhysicsRunner runner, SimulationState inception, SimulationPainter painter, int width, int height) {
+    this(runner, inception, painter, width, height, new ArrayList<>());
+  }
+
+  private SimulationContainer(PhysicsRunner runner, SimulationState inception, SimulationPainter painter, int width, int height, ArrayList<Integer> alteredStates) {
     this.painter = painter;
     this.width = width;
     this.height = height;
     this.runner = runner;
     states = new ArrayList<>();
-    states.add(genesis);
+    this.alteredStates = new ArrayList<>(alteredStates);
+    this.inception = inception;
+    states.add(inception);
   }
 
   public SimulationPainter getPainter() {
@@ -58,7 +68,20 @@ public class SimulationContainer {
   }
 
   public SimulationContainer copy() {
-    return new SimulationContainer(runner, states.get(0), painter, getWidth(), getHeight());
+    return new SimulationContainer(runner, states.get(0), painter, getWidth(), getHeight(), alteredStates);
+  }
+
+  /**
+   * Reverts altered states, runs from beginning
+   */
+  public void clearState() {
+    int size = states.size();
+    states.clear();
+    states.add(inception);
+    for (int i = states.size(); i < size; i++) {
+      nextState();
+    }
+    alteredStates.clear();
   }
 
   /**
@@ -66,13 +89,16 @@ public class SimulationContainer {
    */
   public void alterState(SimulationState currentState) {
     int size = states.size();
-    System.out.println("size after: " + size);
     states.removeIf(state -> state.getFrameNumber() >= currentState.getFrameNumber());
-    System.out.println("size after: " + states.size());
+    alteredStates.removeIf(num -> num >= currentState.getFrameNumber());
+    alteredStates.add(currentState.getFrameNumber());
     states.add(currentState.getFrameNumber(), currentState);
     for (int i = states.size(); i < size; i++) {
       nextState();
     }
-    System.out.println("size final: " + states.size());
+  }
+
+  public List<Integer> getAlteredStates() {
+    return Collections.unmodifiableList(alteredStates);
   }
 }

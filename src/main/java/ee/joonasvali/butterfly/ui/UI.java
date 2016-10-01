@@ -9,4 +9,5 @@ public interface UI {
   void drawUITop(Graphics g, int totalFrames, int trackPlayed);
   void drawSimulation(SimulationPainter painter, SimulationState simulationState);
   MouseDispatcher getMouseDispatcher();
+  void displayWarning(String message);
 }

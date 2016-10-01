@@ -1,5 +1,6 @@
 package ee.joonasvali.butterfly.simulation;
 
+import ee.joonasvali.butterfly.MutationUtil;
 import ee.joonasvali.butterfly.code.Immutable;
 import ee.joonasvali.butterfly.config.PhysicsConfig;
 import ee.joonasvali.butterfly.simulation.actor.Action;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
  */
 @Immutable
 public class PhysicsRunnerImpl implements PhysicsRunner {
+  public static final int ACTOR_DIAMETER_HEALTH_CLONE_RATIO = 15;
   private final int maxRotationImpulse;
   private final double impulseDecay;
   private final int healthDecay;
@@ -126,10 +128,12 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
     for (Actor actor : actors) {
       ActorBuilder builder = act(actor, actors, food, width, height);
       newActors.add(builder);
-      if (builder.getHealth() > builder.getDiameter() * 5) {
+      if (builder.getHealth() > builder.getDiameter() * ACTOR_DIAMETER_HEALTH_CLONE_RATIO) {
         builder.setHealth(builder.getHealth() / 2);
         // Make a clone
-        newActors.add(new ActorBuilder(builder.build()));
+        ActorBuilder clone = new ActorBuilder(builder.build());
+        MutationUtil.mutate(clone, actor.getPredictableRandom());
+        newActors.add(clone);
       }
     }
 

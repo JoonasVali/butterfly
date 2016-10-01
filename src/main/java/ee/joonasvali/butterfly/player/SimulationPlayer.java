@@ -63,7 +63,11 @@ public class SimulationPlayer {
   }
 
   private SimulationContainer getContainer() {
-    return tracks[track];
+    return getContainer(track);
+  }
+
+  public SimulationContainer getContainer(int index) {
+    return tracks[index];
   }
 
   public Clock getClock() {
