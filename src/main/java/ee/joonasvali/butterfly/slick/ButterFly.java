@@ -16,6 +16,7 @@ import ee.joonasvali.butterfly.simulation.generator.InitialStateGenerator;
 import ee.joonasvali.butterfly.ui.MouseDispatcher;
 import ee.joonasvali.butterfly.ui.MouseListener;
 import ee.joonasvali.butterfly.ui.SelectionListener;
+import ee.joonasvali.butterfly.simulation.SimulationConfiguration;
 import ee.joonasvali.butterfly.ui.SimulationPainterImpl;
 import ee.joonasvali.butterfly.ui.SimulationPlayerPainter;
 import ee.joonasvali.butterfly.ui.SimulationPlayerPainterImpl;
@@ -45,6 +46,7 @@ public class ButterFly extends BasicGame {
   private final Clock clock;
   private final KeyBoardClockListener clockListener;
   private final InitialStateGenerator generator;
+  private final SimulationConfiguration configuration;
 
   private volatile SimulationContainer[] containers = new SimulationContainer[2];
   private volatile SimulationPlayer player;
@@ -64,6 +66,7 @@ public class ButterFly extends BasicGame {
     this.visionHelper = visionHelper;
     this.ui = ui;
     this.config = config;
+    this.configuration = new SimulationConfiguration();
     simulationSizeMultiplier = config.getSimulationSizeMultiplier();
     clock = new ClockImpl(config.getFramesInSimulation());
     clockListener = ((ClockImpl)clock).getListener();
@@ -76,7 +79,7 @@ public class ButterFly extends BasicGame {
     int simWidth = simulationSizeMultiplier * width;
     int simHeight = simulationSizeMultiplier * height;
     SimulationPainterImpl painter = new SimulationPainterImpl(simWidth, simHeight, ((UIImpl)ui).getSimulationScreenWidth(),
-        ((UIImpl)ui).getSimulationScreenHeight(), config.getActorDiameter(), config.getFoodDiameter(), visionHelper);
+        ((UIImpl)ui).getSimulationScreenHeight(), config.getActorDiameter(), config.getFoodDiameter(), configuration, visionHelper);
     SimulationContainer container = new SimulationContainer(
         runner,
         generator.createInitialState(simWidth, simHeight),
@@ -172,6 +175,16 @@ public class ButterFly extends BasicGame {
       int track = player.getTrackPlayed();
       track++;
       player.setTrackPlayed(track % TOTAL_TRACKS);
+      return;
+    }
+
+    if (key == Input.KEY_V) {
+      configuration.setPaintVision(!configuration.isPaintVision());
+      return;
+    }
+
+    if (key == Input.KEY_B) {
+      configuration.setPaintButterflyEffect(!configuration.isPaintButterflyEffect());
       return;
     }
 

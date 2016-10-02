@@ -3,6 +3,7 @@ package ee.joonasvali.butterfly.ui;
 import ee.joonasvali.butterfly.player.Clock;
 import ee.joonasvali.butterfly.simulation.Food;
 import ee.joonasvali.butterfly.simulation.Physical;
+import ee.joonasvali.butterfly.simulation.SimulationConfiguration;
 import ee.joonasvali.butterfly.simulation.actor.Actor;
 import ee.joonasvali.butterfly.simulation.SimulationState;
 import ee.joonasvali.butterfly.simulation.actor.vision.ActorVisionHelper;
@@ -42,18 +43,20 @@ public class SimulationPainterImpl implements SimulationPainter {
   private final Font font;
   private final ActorVisionHelper visionHelper;
   private final float simulationScale;
+  private final SimulationConfiguration configuration;
   private volatile List<Actor> lastActors;
   private volatile List<Food> lastFood;
 
   private volatile Physical selected;
 
-  public SimulationPainterImpl(int width, int height, int onScreenWidth, int onScreenHeight, int maxActorDiameter, int foodDiameter, ActorVisionHelper visionHelper) throws SlickException {
+  public SimulationPainterImpl(int width, int height, int onScreenWidth, int onScreenHeight, int maxActorDiameter, int foodDiameter, SimulationConfiguration configuration, ActorVisionHelper visionHelper) throws SlickException {
     this.visionHelper = visionHelper;
     this.width = width;
     this.height = height;
     this.simulationScale = calcScale(width, height, onScreenWidth, onScreenHeight);
     this.foodDiameter = foodDiameter;
     this.image = new Image(width, height);
+    this.configuration = configuration;
 
     this.food = new Image(foodDiameter, foodDiameter);
     this.butterflyFood = new Image(foodDiameter, foodDiameter);
@@ -112,7 +115,7 @@ public class SimulationPainterImpl implements SimulationPainter {
     g.fillRect(0, 0, width, height);
     Set<Food> originalFood = Collections.emptySet();
     Set<Actor> originalActors = Collections.emptySet();
-    if (originalState.isPresent()) {
+    if (configuration.isPaintButterflyEffect() && originalState.isPresent()) {
       originalFood = new HashSet<>(originalState.get().getFood());
       originalActors = new HashSet<>(originalState.get().getActors());
     }
@@ -148,7 +151,8 @@ public class SimulationPainterImpl implements SimulationPainter {
     g.setLineWidth(2 / simulationScale);
     Image foodImage;
     for (Food f : food) {
-      if (!originalFood.isEmpty() && !originalFood.contains(f)) {
+      if (configuration.isPaintButterflyEffect() && !originalFood.isEmpty() && !originalFood.contains(f)) {
+        // Butterfly effect has reached the food, draw it differently for visibility
         foodImage = this.butterflyFood;
       } else {
         foodImage = this.food;
@@ -172,7 +176,7 @@ public class SimulationPainterImpl implements SimulationPainter {
     this.lastActors = actors;
     for (Actor actor : actors) {
       actorGraphics.clear();
-      if (!originalActors.isEmpty() && !originalActors.contains(actor)) {
+      if (configuration.isPaintButterflyEffect() && !originalActors.isEmpty() && !originalActors.contains(actor)) {
         // Butterfly effect has reached the actor, draw it differently for visibility
         paintActor(actorGraphics, actor.getDiameter(), getButterFlyAffectedActorColor(actor.getHealth()));
       } else {
@@ -197,17 +201,20 @@ public class SimulationPainterImpl implements SimulationPainter {
   }
 
   private void drawVision(Graphics g, Actor actor) {
-//    g.setLineWidth(2 / simulationScale);
-//    g.setColor(Color.pink);
-//    int ax = visionHelper.getActorVisionAX(actor);
-//    int ay = visionHelper.getActorVisionAY(actor);
-//    int bx = visionHelper.getActorVisionBX(actor);
-//    int by = visionHelper.getActorVisionBY(actor);
-//    int cx = visionHelper.getActorVisionCX(actor);
-//    int cy = visionHelper.getActorVisionCY(actor);
-//    g.drawLine(ax, ay, cx, cy);
-//    g.drawLine(bx, by, cx, cy);
-//    g.drawLine(ax, ay, bx, by);
+    if (!configuration.isPaintVision()) {
+      return;
+    }
+    g.setLineWidth(2 / simulationScale);
+    g.setColor(Color.pink);
+    int ax = visionHelper.getActorVisionAX(actor);
+    int ay = visionHelper.getActorVisionAY(actor);
+    int bx = visionHelper.getActorVisionBX(actor);
+    int by = visionHelper.getActorVisionBY(actor);
+    int cx = visionHelper.getActorVisionCX(actor);
+    int cy = visionHelper.getActorVisionCY(actor);
+    g.drawLine(ax, ay, cx, cy);
+    g.drawLine(bx, by, cx, cy);
+    g.drawLine(ax, ay, bx, by);
   }
 
   public MouseListener createMouseListener(Clock clock) {
