@@ -45,8 +45,8 @@ public class Actor extends PhysicalImpl {
         }
       }
       if (nearest == null) {
-
-        return new Action(speed / 2, 0.2);
+        double rotation = (getPredictableRandom().nextDouble() - 0.5d) * 10;
+        return new Action(speed / 2, rotation);
       }
       double rot = nearest.getRelativeRotationToObject();
       if (Math.abs(rot) < 5) {
@@ -65,5 +65,30 @@ public class Actor extends PhysicalImpl {
    */
   public Random getPredictableRandom() {
     return new Random((long)(getX() * getY() * getDiameter() / getHealth() * getId().hashCode() / getSpeed() * getXImpulse() * getYImpulse()));
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Actor)) return false;
+    if (!super.equals(o)) return false;
+
+    Actor actor = (Actor) o;
+
+    if (health != actor.health) return false;
+    if (Double.compare(actor.speed, speed) != 0) return false;
+    return id.equals(actor.id);
+
+  }
+
+  @Override
+  public int hashCode() {
+    int result = super.hashCode();
+    long temp;
+    result = 31 * result + health;
+    temp = Double.doubleToLongBits(speed);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    result = 31 * result + id.hashCode();
+    return result;
   }
 }

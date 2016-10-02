@@ -13,4 +13,25 @@ public class Food extends PhysicalImpl {
   public double getPoints() {
     return points;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Food)) return false;
+    if (!super.equals(o)) return false;
+
+    Food food = (Food) o;
+
+    return Double.compare(food.points, points) == 0;
+
+  }
+
+  @Override
+  public int hashCode() {
+    int result = super.hashCode();
+    long temp;
+    temp = Double.doubleToLongBits(points);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    return result;
+  }
 }

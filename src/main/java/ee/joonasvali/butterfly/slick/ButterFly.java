@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ButterFly extends BasicGame {
   private static final int TOTAL_TRACKS = 2;
@@ -125,9 +126,20 @@ public class ButterFly extends BasicGame {
   @Override
   public void render(GameContainer gameContainer, Graphics graphics) throws SlickException {
     ui.drawUI(graphics, player, playerPainter);
-    ui.drawSimulation(getActiveTrackContainer().getPainter(), player.getState());
+    ui.drawSimulation(getActiveTrackContainer().getPainter(), player.getState(), getOriginalState());
     ui.drawUITop(graphics, player.getCurrentFrame(), player.getTrackPlayed());
     graphics.flush();
+  }
+
+  /**
+   * @return the original state
+   */
+  private Optional<SimulationState> getOriginalState() {
+    if (player.getTrackPlayed() != 0) {
+      return Optional.of(player.getContainer(0).getState(player.getCurrentFrame()));
+    } else {
+      return Optional.empty();
+    }
   }
 
   @Override
@@ -178,6 +190,8 @@ public class ButterFly extends BasicGame {
       if (actors.remove(selected)) {
         SimulationState newState = new SimulationState(state.getFrameNumber(), actors, state.getFood(), state.getWidth(), state.getHeight());
         getActiveTrackContainer().alterState(newState);
+      } else {
+        log.warn("actor " + selected + " is not found from the active track " + player.getTrackPlayed());
       }
     } else if (selected instanceof Food) {
       // remove food
@@ -186,6 +200,8 @@ public class ButterFly extends BasicGame {
       if (food.remove(selected)) {
         SimulationState newState = new SimulationState(state.getFrameNumber(), state.getActors(), food, state.getWidth(), state.getHeight());
         getActiveTrackContainer().alterState(newState);
+      } else {
+        log.warn("Food " + selected + " is not found from the active track " + player.getTrackPlayed());
       }
     }
   }

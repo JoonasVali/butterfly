@@ -1,7 +1,6 @@
 package ee.joonasvali.butterfly.ui;
 
 import ee.joonasvali.butterfly.player.Clock;
-import ee.joonasvali.butterfly.player.ClockImpl;
 import ee.joonasvali.butterfly.simulation.Food;
 import ee.joonasvali.butterfly.simulation.Physical;
 import ee.joonasvali.butterfly.simulation.actor.Actor;
@@ -18,7 +17,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author Joonas Vali July 2016
@@ -34,6 +37,7 @@ public class SimulationPainterImpl implements SimulationPainter {
   private final Image actor;
   private final Graphics actorGraphics;
   private final Image food;
+  private final Image butterflyFood;
   private final Graphics g;
   private final Font font;
   private final ActorVisionHelper visionHelper;
@@ -50,9 +54,15 @@ public class SimulationPainterImpl implements SimulationPainter {
     this.simulationScale = calcScale(width, height, onScreenWidth, onScreenHeight);
     this.foodDiameter = foodDiameter;
     this.image = new Image(width, height);
-    this.food = createFood();
+
+    this.food = new Image(foodDiameter, foodDiameter);
+    this.butterflyFood = new Image(foodDiameter, foodDiameter);
+    paintFood(this.food.getGraphics(), Color.green);
+    paintFood(this.butterflyFood.getGraphics(), Color.red);
+
     this.actor = new Image(maxActorDiameter, maxActorDiameter);
     this.actorGraphics = this.actor.getGraphics();
+
     this.image.setFilter(Image.FILTER_LINEAR);
     this.g = image.getGraphics();
     this.font = createFont();
@@ -75,15 +85,12 @@ public class SimulationPainterImpl implements SimulationPainter {
     return new TrueTypeFont(awtFont, true);
   }
 
-  private Image createFood() throws SlickException {
-    Image image = new Image(foodDiameter, foodDiameter);
-    Graphics g = image.getGraphics();
+  private void paintFood(Graphics g, Color color) {
     g.setLineWidth(2 / simulationScale);
-    g.setColor(Color.green);
+    g.setColor(color);
     g.drawOval(0, 0, foodDiameter, foodDiameter);
     g.drawLine(foodDiameter / 2, foodDiameter / 2, foodDiameter / 2, 0);
     g.flush();
-    return image;
   }
 
   private void paintActor(Graphics g, int diameter, Color color) {
@@ -100,11 +107,17 @@ public class SimulationPainterImpl implements SimulationPainter {
   }
 
   @Override
-  public void draw(int screenX, int screenY, SimulationState state) {
+  public void draw(int screenX, int screenY, SimulationState state, Optional<SimulationState> originalState) {
     g.setColor(BACKGROUND_COLOR);
     g.fillRect(0, 0, width, height);
-    drawFood(g, state.getFood());
-    drawActors(g, state.getActors());
+    Set<Food> originalFood = Collections.emptySet();
+    Set<Actor> originalActors = Collections.emptySet();
+    if (originalState.isPresent()) {
+      originalFood = new HashSet<>(originalState.get().getFood());
+      originalActors = new HashSet<>(originalState.get().getActors());
+    }
+    drawFood(g, state.getFood(), originalFood);
+    drawActors(g, state.getActors(), originalActors);
 
     g.flush();
     image.draw(screenX, screenY, simulationScale);
@@ -129,13 +142,19 @@ public class SimulationPainterImpl implements SimulationPainter {
   }
 
 
-  private void drawFood(Graphics g, List<Food> food) {
+  private void drawFood(Graphics g, List<Food> food, Set<Food> originalFood) {
     this.lastFood = food;
     g.setColor(Color.orange);
     g.setLineWidth(2 / simulationScale);
+    Image foodImage;
     for (Food f : food) {
-      this.food.setRotation((float) (f.getRotation() + 90));
-      g.drawImage(this.food, f.getRoundedX(), f.getRoundedY());
+      if (!originalFood.isEmpty() && !originalFood.contains(f)) {
+        foodImage = this.butterflyFood;
+      } else {
+        foodImage = this.food;
+      }
+      foodImage.setRotation((float) (f.getRotation() + 90));
+      g.drawImage(foodImage, f.getRoundedX(), f.getRoundedY());
       drawSelectedIfMatch(g, f);
     }
 
@@ -149,11 +168,17 @@ public class SimulationPainterImpl implements SimulationPainter {
     }
   }
 
-  private void drawActors(Graphics g, List<Actor> actors) {
+  private void drawActors(Graphics g, List<Actor> actors, Set<Actor> originalActors) {
     this.lastActors = actors;
     for (Actor actor : actors) {
       actorGraphics.clear();
-      paintActor(actorGraphics, actor.getDiameter(), getActorColor(actor.getHealth()));
+      if (!originalActors.isEmpty() && !originalActors.contains(actor)) {
+        // Butterfly effect has reached the actor, draw it differently for visibility
+        paintActor(actorGraphics, actor.getDiameter(), getButterFlyAffectedActorColor(actor.getHealth()));
+      } else {
+        paintActor(actorGraphics, actor.getDiameter(), getActorColor(actor.getHealth()));
+      }
+
       this.actor.setRotation((float) actor.getRotation() + 90);
       int x = actor.getRoundedX() - ((this.actor.getWidth() - actor.getDiameter()) / 2);
       int y = actor.getRoundedY() - ((this.actor.getHeight() - actor.getDiameter()) / 2);
@@ -161,6 +186,10 @@ public class SimulationPainterImpl implements SimulationPainter {
       drawSelectedIfMatch(g, actor);
       drawVision(g, actor);
     }
+  }
+
+  private Color getButterFlyAffectedActorColor(int health) {
+    return Color.red;
   }
 
   private Color getActorColor(int health) {

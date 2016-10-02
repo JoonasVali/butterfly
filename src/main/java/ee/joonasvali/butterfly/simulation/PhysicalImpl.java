@@ -60,4 +60,41 @@ public class PhysicalImpl implements Physical {
   public double getYImpulse() {
     return yImpulse;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof PhysicalImpl)) return false;
+
+    PhysicalImpl physical = (PhysicalImpl) o;
+
+    if (Double.compare(physical.x, x) != 0) return false;
+    if (Double.compare(physical.y, y) != 0) return false;
+    if (Double.compare(physical.rotation, rotation) != 0) return false;
+    if (Double.compare(physical.rotationImpulse, rotationImpulse) != 0) return false;
+    if (Double.compare(physical.xImpulse, xImpulse) != 0) return false;
+    if (Double.compare(physical.yImpulse, yImpulse) != 0) return false;
+    return diameter == physical.diameter;
+
+  }
+
+  @Override
+  public int hashCode() {
+    int result;
+    long temp;
+    temp = Double.doubleToLongBits(x);
+    result = (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(y);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(rotation);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(rotationImpulse);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(xImpulse);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(yImpulse);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    result = 31 * result + diameter;
+    return result;
+  }
 }

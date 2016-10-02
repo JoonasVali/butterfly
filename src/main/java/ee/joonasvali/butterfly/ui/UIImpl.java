@@ -7,6 +7,8 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 
+import java.util.Optional;
+
 public class UIImpl implements UI {
   private final int playerX;
   private final int playerY;
@@ -68,8 +70,8 @@ public class UIImpl implements UI {
     g.drawString("Track: " + trackPlayed, 250, 10);
   }
 
-  public void drawSimulation(SimulationPainter painter, SimulationState simulationState) {
-    painter.draw(simulationX, simulationY, simulationState);
+  public void drawSimulation(SimulationPainter painter, SimulationState simulationState, Optional<SimulationState> originalState) {
+    painter.draw(simulationX, simulationY, simulationState, originalState);
   }
 
   @Override
