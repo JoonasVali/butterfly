@@ -24,7 +24,6 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
 
-
   <dependencies>
     <dependency>
       <groupId>org.slick2d</groupId>
@@ -109,6 +108,9 @@
         <artifactId>maven-jar-plugin</artifactId>
         <version>2.6</version>
         <configuration>
+          <excludes>
+            <exclude>logback-dev.xml</exclude>
+          </excludes>
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
