@@ -6,6 +6,10 @@ import ee.joonasvali.butterfly.simulation.SimulationState;
 import ee.joonasvali.butterfly.simulation.actor.Actor;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Joonas Vali October 2016
@@ -16,12 +20,20 @@ public class DefaultInitialStateGenerator implements InitialStateGenerator {
   private final int initialHealth;
   private final int actorDiameter;
   private final int foodDiameter;
+  private final static String[] FIRST_NAMES = {"JAMES", "JOHN", "ROBERT", "MICHAEL", "WILLIAM", "DAVID", "RICHARD", "CHARLES", "JOSEPH", "JOFFREY", "BRAN", "LEIA", "LUKE", "HARRY"};
+  private final static String[] LAST_NAMES =  {"GATES", "DOE", "HOLMES", "PARK", "SEAGULL", "BEAR", "TARGARYEN", "SNOW", "LANNISTER", "SMITH", "STARK", "BARATHEON", "POTTER"};
+  private final NameGenerator nameGen;
+
 
   public DefaultInitialStateGenerator(ButterFlyConfig config) {
     actorsInSimulation = config.getActorsInSimulation();
     initialHealth = config.getActorInitialHealth();
     actorDiameter = config.getActorDiameter();
     foodDiameter = config.getFoodDiameter();
+    nameGen = new NameGenerator(FIRST_NAMES, LAST_NAMES);
+    if (nameGen.getSize() < actorsInSimulation) {
+      throw new IllegalStateException("Name generator is able to provide less unique names than actors in simulation. Reduce the actor count.");
+    }
   }
 
   @Override
@@ -38,8 +50,9 @@ public class DefaultInitialStateGenerator implements InitialStateGenerator {
   }
 
   private Actor createRandomActor(int simWidth, int simHeight) {
+    String id = nameGen.next();
     return new Actor(
-        getRandomId(),
+        id,
         (int) (Math.random() * simWidth),
         (int) (Math.random() * simHeight),
         (int) (50 + (Math.random() * (actorDiameter - 50))),
@@ -50,12 +63,6 @@ public class DefaultInitialStateGenerator implements InitialStateGenerator {
         initialHealth,
         1 + Math.random() * 3
     );
-  }
-
-  private String getRandomId() {
-    String[] firstNames = {"JAMES", "JOHN", "ROBERT", "MICHAEL", "WILLIAM", "DAVID", "RICHARD", "CHARLES", "JOSEPH", "JOFFREY", "BRAN", "LEIA", "LUKE"};
-    String[] lastNames = {"GATES", "DOE", "HOLMES", "PARK", "SEAGULL", "BEAR", "TARGARYEN", "SNOW", "LANNISTER", "SMITH", "STARK", "BARATHEON"};
-    return firstNames[((int) (Math.random() * firstNames.length))] + " " + lastNames[((int) (Math.random() * lastNames.length))];
   }
 
   private ArrayList<Food> getFood(int simWidth, int simHeight) {
@@ -77,6 +84,26 @@ public class DefaultInitialStateGenerator implements InitialStateGenerator {
         0,
         FOOD_HEALTH_RECOVER_MODIFIER
     );
+  }
+
+  private static class NameGenerator {
+    private List<String> names = new ArrayList<>();
+    NameGenerator(String[] firstNames, String[] lastNames) {
+      for (String firstName : firstNames) {
+        for (String lastName : lastNames) {
+          names.add(firstName + " " + lastName);
+        }
+      }
+      Collections.shuffle(names);
+    }
+
+    int getSize() {
+      return names.size();
+    }
+
+    String next() {
+      return names.remove(names.size() - 1);
+    }
   }
 
 }

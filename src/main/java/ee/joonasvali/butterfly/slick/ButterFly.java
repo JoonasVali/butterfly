@@ -175,16 +175,18 @@ public class ButterFly extends BasicGame {
       // remove actor
       SimulationState state = getActiveTrackContainer().getState(clock.getFrameIndex());
       List<Actor> actors = new ArrayList<>(state.getActors());
-      actors.remove(selected);
-      SimulationState newState = new SimulationState(state.getFrameNumber(), actors, state.getFood(), state.getWidth(), state.getHeight());
-      getActiveTrackContainer().alterState(newState);
+      if (actors.remove(selected)) {
+        SimulationState newState = new SimulationState(state.getFrameNumber(), actors, state.getFood(), state.getWidth(), state.getHeight());
+        getActiveTrackContainer().alterState(newState);
+      }
     } else if (selected instanceof Food) {
       // remove food
       SimulationState state = getActiveTrackContainer().getState(clock.getFrameIndex());
       List<Food> food = new ArrayList<>(state.getFood());
-      food.remove(selected);
-      SimulationState newState = new SimulationState(state.getFrameNumber(), state.getActors(), food, state.getWidth(), state.getHeight());
-      getActiveTrackContainer().alterState(newState);
+      if (food.remove(selected)) {
+        SimulationState newState = new SimulationState(state.getFrameNumber(), state.getActors(), food, state.getWidth(), state.getHeight());
+        getActiveTrackContainer().alterState(newState);
+      }
     }
   }
 
