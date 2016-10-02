@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- This is Development configuration, one that is used when you launch the program from your IDE, (logback.xml is the default logging configuration).
+     It will NOT be added to the final built application.
+ -->
 
 <configuration>
    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">

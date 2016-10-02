@@ -109,7 +109,8 @@
         <version>2.6</version>
         <configuration>
           <excludes>
-            <exclude>logback-dev.xml</exclude>
+            <!-- we exclude the default logback.xml from final jar, as this is the one used in development -->
+            <exclude>logback.xml</exclude>
           </excludes>
           <archive>
             <manifest>
