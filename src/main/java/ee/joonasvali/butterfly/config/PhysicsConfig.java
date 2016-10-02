@@ -6,19 +6,19 @@ import org.springframework.beans.factory.annotation.Value;
  * @author Joonas Vali September 2016
  */
 public class PhysicsConfig {
-  @Value("${physics.rotationimpulse.max}")
+  @Value("${i.physics.rotationimpulse.max}")
   private int maxRotationImpulse;
-  @Value("${physics.impulse.decay}")
+  @Value("${d.physics.impulse.decay}")
   private double impulseDecay;
-  @Value("${physics.health.decay}")
+  @Value("${i.physics.health.decay}")
   private int healthDecay;
-  @Value("${physics.food.detection.diameter}")
+  @Value("${i.physics.food.detection.diameter}")
   private int foodDetectionDiameter;
-  @Value("${physics.sideways.impulse.modifier}")
+  @Value("${i.physics.sideways.impulse.modifier}")
   private int sideWaysImpulseModifier;
-  @Value("${physics.collision.force.modifier}")
+  @Value("${d.physics.collision.force.modifier}")
   private double collisionForceModifier;
-  @Value("${physics.food.consume.impulse.diff}")
+  @Value("${i.physics.food.consume.impulse.diff}")
   private int actorFoodConsumeImpulseDiff;
 
   public int getMaxRotationImpulse() {

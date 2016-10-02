@@ -3,27 +3,27 @@ package ee.joonasvali.butterfly.config;
 import org.springframework.beans.factory.annotation.Value;
 
 public class ButterFlyConfig {
-  @Value("${window.width}")
+  @Value("${i.window.width}")
   private int windowResolutionWidth;
-  @Value("${window.height}")
+  @Value("${i.window.height}")
   private int windowResolutionHeight;
-  @Value("${window.fullscreen}")
+  @Value("${b.window.fullscreen}")
   private boolean fullscreen;
-  @Value("${actor.diameter}")
+  @Value("${i.actor.diameter}")
   private int actorDiameter;
-  @Value("${food.diameter}")
+  @Value("${i.food.diameter}")
   private int foodDiameter;
-  @Value("${actor.vision.wideness.degrees}")
+  @Value("${i.actor.vision.wideness.degrees}")
   private int actorVisionWidnessDegrees;
-  @Value("${actor.vision.distance}")
+  @Value("${i.actor.vision.distance}")
   private int actorVisionDistance;
-  @Value("${simulation.size.multiplier}")
+  @Value("${i.simulation.size.multiplier}")
   private int simulationSizeMultiplier;
-  @Value("${actor.count}")
+  @Value("${i.actor.count}")
   private int actorsInSimulation;
-  @Value("${actor.initialhealth}")
+  @Value("${i.actor.initialhealth}")
   private int actorInitialHealth;
-  @Value("${simulation.length}")
+  @Value("${i.simulation.length}")
   private int framesInSimulation;
 
   public int getWindowResolutionWidth() {
