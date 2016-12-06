@@ -46,7 +46,7 @@ public class ButterFly extends BasicGame {
   private final Clock clock;
   private final KeyBoardClockListener clockListener;
   private final InitialStateGenerator generator;
-  private final SimulationConfiguration configuration;
+  private final SimulationConfiguration runtimeConfig;
 
   private volatile SimulationContainer[] containers = new SimulationContainer[2];
   private volatile SimulationPlayer player;
@@ -66,7 +66,7 @@ public class ButterFly extends BasicGame {
     this.visionHelper = visionHelper;
     this.ui = ui;
     this.config = config;
-    this.configuration = new SimulationConfiguration();
+    this.runtimeConfig = new SimulationConfiguration();
     simulationSizeMultiplier = config.getSimulationSizeMultiplier();
     clock = new ClockImpl(config.getFramesInSimulation());
     clockListener = ((ClockImpl)clock).getListener();
@@ -79,7 +79,7 @@ public class ButterFly extends BasicGame {
     int simWidth = simulationSizeMultiplier * width;
     int simHeight = simulationSizeMultiplier * height;
     SimulationPainterImpl painter = new SimulationPainterImpl(simWidth, simHeight, ((UIImpl)ui).getSimulationScreenWidth(),
-        ((UIImpl)ui).getSimulationScreenHeight(), config.getActorDiameter(), config.getFoodDiameter(), configuration, visionHelper);
+        ((UIImpl)ui).getSimulationScreenHeight(), config.getActorDiameter(), config.getFoodDiameter(), runtimeConfig, visionHelper);
     SimulationContainer container = new SimulationContainer(
         runner,
         generator.createInitialState(simWidth, simHeight),
@@ -179,12 +179,12 @@ public class ButterFly extends BasicGame {
     }
 
     if (key == Input.KEY_V) {
-      configuration.setPaintVision(!configuration.isPaintVision());
+      runtimeConfig.setPaintVision(!runtimeConfig.isPaintVision());
       return;
     }
 
     if (key == Input.KEY_B) {
-      configuration.setPaintButterflyEffect(!configuration.isPaintButterflyEffect());
+      runtimeConfig.setPaintButterflyEffect(!runtimeConfig.isPaintButterflyEffect());
       return;
     }
 

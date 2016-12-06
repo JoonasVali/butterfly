@@ -22,6 +22,7 @@
     <project.dist>${program.target}/dist</project.dist>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <pdf.outputDirectory>${basedir}/target/pdf</pdf.outputDirectory>
   </properties>
 
   <dependencies>
@@ -130,7 +131,7 @@
         <executions>
           <execution>
             <id>copy-resources</id>
-            <phase>install</phase>
+            <phase>package</phase>
             <goals>
               <goal>copy-resources</goal>
             </goals>
@@ -146,7 +147,27 @@
         </executions>
       </plugin>
 
-
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pdf-plugin</artifactId>
+        <version>1.3</version>
+        <executions>
+          <execution>
+            <id>pdf</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>pdf</goal>
+            </goals>
+            <configuration>
+              <implementation>itext</implementation>
+              <outputDirectory>${pdf.outputDirectory}</outputDirectory>
+              <includeReports>false</includeReports>
+              <validate>true</validate>
+              <generateTOC>none</generateTOC>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>

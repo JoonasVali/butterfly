@@ -1,9 +1,9 @@
-package ee.joonasvali.butterfly.ui;
+package ee.joonasvali.butterfly.ui.message;
 
 /**
  * @author Joonas Vali October 2016
  */
-public class WarningMessage {
+public class WarningMessage implements Message {
   private static final int DEFAULT_DURATION = 5000;
   private final long duration;
   private final String message;

@@ -3,6 +3,8 @@ package ee.joonasvali.butterfly.ui;
 import ee.joonasvali.butterfly.config.ButterFlyConfig;
 import ee.joonasvali.butterfly.player.SimulationPlayer;
 import ee.joonasvali.butterfly.simulation.SimulationState;
+import ee.joonasvali.butterfly.ui.message.Message;
+import ee.joonasvali.butterfly.ui.message.WarningMessage;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -27,7 +29,7 @@ public class UIImpl implements UI {
    * Height of simulation space on screen
    */
   private final int simulationScreenHeight;
-  private volatile WarningMessage warning;
+  private volatile Message message;
 
   public UIImpl(ButterFlyConfig config) {
     this.config = config;
@@ -54,15 +56,15 @@ public class UIImpl implements UI {
   public void drawUITop(Graphics g, int totalFrames, int trackPlayed) {
     drawFrameCounter(g, totalFrames);
     drawTrack(g, trackPlayed);
-    drawWarningIfPresent(g, warning);
+    drawWarningIfPresent(g, message);
   }
 
-  private void drawWarningIfPresent(Graphics g, WarningMessage warning) {
-    if (warning == null || warning.isExpired()) {
+  private void drawWarningIfPresent(Graphics g, Message message) {
+    if (message == null || message.isExpired()) {
       return;
     }
     g.setColor(Color.yellow);
-    g.drawString(warning.getMessage(), 250, 20);
+    g.drawString(message.getMessage(), 250, 20);
   }
 
   private void drawTrack(Graphics g, int trackPlayed) {
@@ -119,7 +121,7 @@ public class UIImpl implements UI {
 
   @Override
   public void displayWarning(String message) {
-    warning = new WarningMessage(message);
+    this.message = new WarningMessage(message);
   }
 
   public int getSimulationScreenWidth() {
