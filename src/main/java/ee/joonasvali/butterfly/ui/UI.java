@@ -12,4 +12,6 @@ public interface UI {
   void drawSimulation(SimulationPainter painter, SimulationState simulationState, Optional<SimulationState> originalState);
   MouseDispatcher getMouseDispatcher();
   void displayWarning(String message);
+  void toggleHelp();
+  boolean isHelpVisible();
 }

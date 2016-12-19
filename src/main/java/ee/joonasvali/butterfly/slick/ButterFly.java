@@ -185,13 +185,23 @@ public class ButterFly extends BasicGame {
 
     if (key == Input.KEY_B) {
       runtimeConfig.setPaintButterflyEffect(!runtimeConfig.isPaintButterflyEffect());
+      ui.displayWarning("ButterFly view: " + (runtimeConfig.isPaintButterflyEffect() ? "ON" : "OFF"));
+      return;
+    }
+
+    if (key == Input.KEY_H) {
+      ui.toggleHelp();
       return;
     }
 
     clockListener.keyReleased(key);
 
     if (key == Input.KEY_ESCAPE) {
-      shutdown = true;
+      if (!ui.isHelpVisible()) {
+        shutdown = true;
+      } else {
+        ui.toggleHelp();
+      }
     }
   }
 

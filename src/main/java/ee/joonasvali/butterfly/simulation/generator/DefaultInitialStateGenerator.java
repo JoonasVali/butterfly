@@ -7,9 +7,7 @@ import ee.joonasvali.butterfly.simulation.actor.Actor;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Joonas Vali October 2016

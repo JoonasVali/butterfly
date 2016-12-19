@@ -12,6 +12,12 @@ import org.newdawn.slick.Image;
 import java.util.Optional;
 
 public class UIImpl implements UI {
+  private static final Color HELP_BACKGROUND = new Color(80, 80, 170);
+  public static final int HELP_X = 300;
+  public static final int HELP_Y = 300;
+  public static final int HELP_WIDTH = 900;
+  public static final int HELP_HEIGHT = 500;
+
   private final int playerX;
   private final int playerY;
   private final int playerWidth;
@@ -30,6 +36,16 @@ public class UIImpl implements UI {
    */
   private final int simulationScreenHeight;
   private volatile Message message;
+  private volatile boolean help;
+
+  public static final String[] HELP_CONTENT = new String[]{
+      "Press SPACE to pause/resume",
+      "Press '1' '2' '3' to choose speed. '0' for reverse. ",
+      "Press 'T' to switch track. The lower track is the one you can edit.",
+      "While on lower track, click on screen to select actor or food.",
+      "Press 'delete' to alter timeline and remove the actor or food from existence.",
+      "Press 'B' to toggle Butterfly Effect view on / off. (Works if you've altered the timeline.)",
+  };
 
   public UIImpl(ButterFlyConfig config) {
     this.config = config;
@@ -57,6 +73,21 @@ public class UIImpl implements UI {
     drawFrameCounter(g, totalFrames);
     drawTrack(g, trackPlayed);
     drawWarningIfPresent(g, message);
+    if (help) {
+      drawHelp(g);
+    }
+  }
+
+  private void drawHelp(Graphics g) {
+    g.setColor(HELP_BACKGROUND);
+    g.fillRect(HELP_X, HELP_Y, HELP_WIDTH, HELP_HEIGHT);
+    g.setColor(Color.white);
+    g.drawRect(HELP_X, HELP_Y, HELP_WIDTH, HELP_HEIGHT);
+    String[] helpContent = HELP_CONTENT;
+    for (int i = 0; i < helpContent.length; i++) {
+      g.drawString(helpContent[i], HELP_X + 20, HELP_Y + 20 + i * 20);
+    }
+
   }
 
   private void drawWarningIfPresent(Graphics g, Message message) {
@@ -122,6 +153,16 @@ public class UIImpl implements UI {
   @Override
   public void displayWarning(String message) {
     this.message = new WarningMessage(message);
+  }
+
+  @Override
+  public void toggleHelp() {
+    this.help = !this.help;
+  }
+
+  @Override
+  public boolean isHelpVisible() {
+    return this.help;
   }
 
   public int getSimulationScreenWidth() {

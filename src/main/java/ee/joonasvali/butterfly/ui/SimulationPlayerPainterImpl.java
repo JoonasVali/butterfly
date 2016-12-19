@@ -44,6 +44,8 @@ public class SimulationPlayerPainterImpl implements SimulationPlayerPainter {
     drawTrackAt(10, 10, g, player, player.getContainer(0), player.getTrackPlayed() == 0);
     drawTrackAt(10, 30, g, player, player.getContainer(1), player.getTrackPlayed() == 1);
     drawControlsAt(player.getClock(), CONTROLS_X, CONTROLS_Y, g);
+    g.setColor(Color.white);
+    g.drawString("Press 'H' for help.", CONTROLS_X + 100, CONTROLS_Y);
     g.flush();
     return image;
   }
