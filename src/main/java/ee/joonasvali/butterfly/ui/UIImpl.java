@@ -13,8 +13,8 @@ import java.util.Optional;
 
 public class UIImpl implements UI {
   private static final Color HELP_BACKGROUND = new Color(80, 80, 170);
-  public static final int HELP_X = 300;
-  public static final int HELP_Y = 300;
+  public static final int HELP_X = 100;
+  public static final int HELP_Y = 100;
   public static final int HELP_WIDTH = 900;
   public static final int HELP_HEIGHT = 500;
 

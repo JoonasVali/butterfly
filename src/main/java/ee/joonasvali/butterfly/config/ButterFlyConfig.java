@@ -2,7 +2,10 @@ package ee.joonasvali.butterfly.config;
 
 import org.springframework.beans.factory.annotation.Value;
 
+import java.awt.Toolkit;
+
 public class ButterFlyConfig {
+  public static final int REAL_SCREEN_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height;
   @Value("${i.window.width}")
   private int windowResolutionWidth;
   @Value("${i.window.height}")
@@ -27,10 +30,16 @@ public class ButterFlyConfig {
   private int framesInSimulation;
 
   public int getWindowResolutionWidth() {
+    if (windowResolutionWidth <= 0) {
+      return Toolkit.getDefaultToolkit().getScreenSize().width;
+    }
     return windowResolutionWidth;
   }
 
   public int getWindowResolutionHeight() {
+    if (windowResolutionHeight <= 0) {
+      return REAL_SCREEN_HEIGHT;
+    }
     return windowResolutionHeight;
   }
 
