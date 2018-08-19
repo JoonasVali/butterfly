@@ -1,14 +1,13 @@
 package ee.joonasvali.butterfly;
 
 import ee.joonasvali.butterfly.config.ButterFlyConfig;
-import ee.joonasvali.butterfly.slick.ButterFly;
 import ee.joonasvali.butterfly.spring.SpringConfig;
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.SlickException;
+import ee.joonasvali.butterfly.uiswing.ButterflyWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import javax.swing.*;
 import java.awt.*;
 
 public class Boot {
@@ -28,11 +27,12 @@ public class Boot {
 
       ButterFlyConfig config = ctx.getBean(ButterFlyConfig.class);
 
-      AppGameContainer container = new AppGameContainer(fly);
-      container.setForceExit(true);
-      container.setDisplayMode(config.getWindowResolutionWidth(), config.getWindowResolutionHeight(), config.isFullscreen());
-      container.setVSync(true);
-      container.start();
+      SwingUtilities.invokeAndWait(() -> {
+        fly.init();
+        ButterflyWindow window = new ButterflyWindow(fly, config);
+        window.show();
+        window.start();
+      });
 
     } catch (Throwable t) {
       log.error("Unable to launch Butterfly Effect Simulator", t);

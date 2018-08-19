@@ -16,9 +16,12 @@ public class ActorBuilder implements Physical {
   private int diameter;
   private int health;
   private double speed;
+  private int children;
   private String id;
+  private PhysicalUID uid;
 
   public ActorBuilder(Actor actor) {
+    this.uid = actor.getUID();
     this.x = actor.getX();
     this.y = actor.getY();
     this.rotation = actor.getRotation();
@@ -29,10 +32,11 @@ public class ActorBuilder implements Physical {
     this.health = actor.getHealth();
     this.speed = actor.getSpeed();
     this.id = actor.getId();
+    this.children = actor.getChildren();
   }
 
   public Actor build() {
-    return new Actor(id, x, y, diameter, rotation, xImpulse, yImpulse, rotationImpulse, health, speed);
+    return new Actor(uid, id, x, y, diameter, rotation, xImpulse, yImpulse, rotationImpulse, health, speed, children);
   }
 
   public double getX() {
@@ -113,5 +117,21 @@ public class ActorBuilder implements Physical {
 
   public void setId(String id) {
     this.id = id;
+  }
+
+  public int getChildren() {
+    return children;
+  }
+
+  public void setChildren(int children) {
+    this.children = children;
+  }
+
+  public PhysicalUID getUid() {
+    return uid;
+  }
+
+  public void setUid(PhysicalUID uid) {
+    this.uid = uid;
   }
 }

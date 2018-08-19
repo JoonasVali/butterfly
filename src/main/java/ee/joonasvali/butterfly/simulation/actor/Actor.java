@@ -2,6 +2,7 @@ package ee.joonasvali.butterfly.simulation.actor;
 
 import ee.joonasvali.butterfly.code.Immutable;
 import ee.joonasvali.butterfly.simulation.PhysicalImpl;
+import ee.joonasvali.butterfly.simulation.PhysicalUID;
 import ee.joonasvali.butterfly.simulation.actor.vision.VisibleActor;
 import ee.joonasvali.butterfly.simulation.actor.vision.VisibleFood;
 
@@ -16,12 +17,15 @@ public class Actor extends PhysicalImpl {
   private final int health;
   private final double speed;
   private final String id;
+  private final int children;
 
-  public Actor(String id, double x, double y, int diameter, double rotation, double xImpulse, double yImpulse, double rotationImpulse, int health, double speed) {
-    super(x, y, diameter, rotation, xImpulse, yImpulse, rotationImpulse);
+  public Actor(PhysicalUID uid, String id, double x, double y, int diameter, double rotation, double xImpulse,
+               double yImpulse, double rotationImpulse, int health, double speed, int children) {
+    super(uid, x, y, diameter, rotation, xImpulse, yImpulse, rotationImpulse);
     this.id = id;
     this.health = health;
     this.speed = speed;
+    this.children = children;
   }
 
   public int getHealth() {
@@ -65,6 +69,10 @@ public class Actor extends PhysicalImpl {
    */
   public Random getPredictableRandom() {
     return new Random((long)(getX() * getY() * getDiameter() / getHealth() * getId().hashCode() / getSpeed() * getXImpulse() * getYImpulse()));
+  }
+
+  public int getChildren() {
+    return children;
   }
 
   @Override

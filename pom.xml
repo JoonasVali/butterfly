@@ -17,7 +17,6 @@
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
     <binfolder>${basedir}/bin</binfolder>
     <asm.file>${basedir}/assembly/assembly.xml</asm.file>
-    <slick.native.lib>${basedir}/target/natives</slick.native.lib>
     <program.target>${basedir}/target</program.target>
     <project.dist>${program.target}/dist</project.dist>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -26,11 +25,6 @@
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>org.slick2d</groupId>
-      <artifactId>slick2d-core</artifactId>
-      <version>1.0.1</version>
-    </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -44,7 +38,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
-      <version>4.3.0.RELEASE</version>
+      <version>4.3.18.RELEASE</version>
     </dependency>
   </dependencies>
 
@@ -87,22 +81,6 @@
         </configuration>
       </plugin>
 
-      <!-- Adds native files to the application, like Slick2D native files-->
-      <plugin>
-        <groupId>com.googlecode.mavennatives</groupId>
-        <artifactId>maven-nativedependencies-plugin</artifactId>
-        <version>0.0.5</version>
-        <executions>
-          <execution>
-            <id>unpacknatives</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
       <!-- Produces app JAR from the classes. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -142,28 +120,6 @@
                   <directory>${program.target}/${artifactId}/${artifactId}</directory>
                 </resource>
               </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-pdf-plugin</artifactId>
-        <version>1.3</version>
-        <executions>
-          <execution>
-            <id>pdf</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>pdf</goal>
-            </goals>
-            <configuration>
-              <implementation>itext</implementation>
-              <outputDirectory>${pdf.outputDirectory}</outputDirectory>
-              <includeReports>false</includeReports>
-              <validate>true</validate>
-              <generateTOC>none</generateTOC>
             </configuration>
           </execution>
         </executions>

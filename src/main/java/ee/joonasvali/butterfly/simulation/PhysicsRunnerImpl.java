@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  */
 @Immutable
 public class PhysicsRunnerImpl implements PhysicsRunner {
-  public static final int ACTOR_DIAMETER_HEALTH_CLONE_RATIO = 15;
+  private static final int ACTOR_DIAMETER_HEALTH_CLONE_RATIO = 15;
   private final int maxRotationImpulse;
   private final double impulseDecay;
   private final int healthDecay;
@@ -44,8 +44,8 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
   @Override
   public SimulationState run(SimulationState original) {
     List<Actor> actors = original.getActors();
-    List<ActorBuilder> actorBuilders = modifyActors(actors, original.getFood(), original.getWidth(), original.getHeight());
-    List<Food> newFood = modifyFood(original.getFood(), actorBuilders, original.getWidth(), original.getHeight());
+    List<ActorBuilder> actorBuilders = modifyActors(actors, original.getFoods(), original.getWidth(), original.getHeight());
+    List<Food> newFood = modifyFood(original.getFoods(), actorBuilders, original.getWidth(), original.getHeight());
     List<Actor> finalActors = new ArrayList<>();
     for (ActorBuilder ab : actorBuilders) {
       if (ab.getHealth() > 0) {
@@ -128,10 +128,17 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
     for (Actor actor : actors) {
       ActorBuilder builder = act(actor, actors, food, width, height);
       newActors.add(builder);
+      // Split actor into two
       if (builder.getHealth() > builder.getDiameter() * ACTOR_DIAMETER_HEALTH_CLONE_RATIO) {
+        builder.setChildren(builder.getChildren() + 1);
         builder.setHealth(builder.getHealth() / 2);
-        // Make a clone
         ActorBuilder clone = new ActorBuilder(builder.build());
+        /* Can't just create a 'new PhysicalUID()' here, as separate tracks would end up
+           creating non-identical UID's for clones, which means for all purposes the clone
+           created in track A is not the same actor, as the clone created in track B, even if they would
+           end up being indifferent. Instead we try to derive it from parent deterministically.
+        */
+        clone.setUid(derive(actor));
         MutationUtil.mutate(clone, actor.getPredictableRandom());
         newActors.add(clone);
       }
@@ -139,6 +146,16 @@ public class PhysicsRunnerImpl implements PhysicsRunner {
 
     modifyCollisions(newActors);
     return newActors;
+  }
+
+  private PhysicalUID derive(Actor actor) {
+    PhysicalUID uid = actor.getUID();
+    /* We pass the number of children this actor has as a seed, which logically means that n-th child for actor
+    * in one track has matching PhysicalUID for the n-th child in other track. This solves the issue that
+    * even slight butterfly effect will cause the children in separate tracks not to be linked at all, as would be the
+    * case if we'd try to generate the PhysicalUID based on the properties of the parent.
+    * */
+    return uid.getDerivativeUID(actor.getChildren());
   }
 
   private void modifyCollisions(List<ActorBuilder> actors) {

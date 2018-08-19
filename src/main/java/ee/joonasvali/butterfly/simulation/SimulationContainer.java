@@ -1,7 +1,5 @@
 package ee.joonasvali.butterfly.simulation;
 
-import ee.joonasvali.butterfly.ui.SimulationPainter;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,7 +8,6 @@ import java.util.List;
  * @author Joonas Vali July 2016
  */
 public class SimulationContainer {
-  private final SimulationPainter painter;
   private final int width;
   private final int height;
   private final PhysicsRunner runner;
@@ -18,12 +15,11 @@ public class SimulationContainer {
   private final ArrayList<Integer> alteredStates;
   private final SimulationState inception;
 
-  public SimulationContainer(PhysicsRunner runner, SimulationState inception, SimulationPainter painter, int width, int height) {
-    this(runner, inception, painter, width, height, new ArrayList<>());
+  public SimulationContainer(PhysicsRunner runner, SimulationState inception, int width, int height) {
+    this(runner, inception, width, height, new ArrayList<>());
   }
 
-  private SimulationContainer(PhysicsRunner runner, SimulationState inception, SimulationPainter painter, int width, int height, ArrayList<Integer> alteredStates) {
-    this.painter = painter;
+  private SimulationContainer(PhysicsRunner runner, SimulationState inception, int width, int height, ArrayList<Integer> alteredStates) {
     this.width = width;
     this.height = height;
     this.runner = runner;
@@ -31,10 +27,6 @@ public class SimulationContainer {
     this.alteredStates = new ArrayList<>(alteredStates);
     this.inception = inception;
     states.add(inception);
-  }
-
-  public SimulationPainter getPainter() {
-    return painter;
   }
 
   public int getWidth() {
@@ -68,7 +60,7 @@ public class SimulationContainer {
   }
 
   public SimulationContainer copy() {
-    return new SimulationContainer(runner, states.get(0), painter, getWidth(), getHeight(), alteredStates);
+    return new SimulationContainer(runner, states.get(0), getWidth(), getHeight(), alteredStates);
   }
 
   /**

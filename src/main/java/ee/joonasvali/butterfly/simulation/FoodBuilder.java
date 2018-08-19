@@ -13,10 +13,12 @@ public class FoodBuilder implements Physical {
   private double yImpulse;
   private int diameter;
   private double points;
+  private PhysicalUID uid;
 
   private final Food original;
 
   public FoodBuilder(Food food) {
+    this.uid = food.getUID();
     this.x = food.getX();
     this.y = food.getY();
     this.rotation = food.getRotation();
@@ -33,7 +35,7 @@ public class FoodBuilder implements Physical {
   }
 
   public Food build() {
-    return new Food(x, y, diameter, rotation, xImpulse, yImpulse, rotationImpulse, points);
+    return new Food(uid, x, y, diameter, rotation, xImpulse, yImpulse, rotationImpulse, points);
   }
 
   public double getX() {

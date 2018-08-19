@@ -2,7 +2,6 @@ package ee.joonasvali.butterfly.player;
 
 import ee.joonasvali.butterfly.simulation.SimulationContainer;
 import ee.joonasvali.butterfly.simulation.SimulationState;
-import ee.joonasvali.butterfly.ui.MouseListener;
 
 /**
  * @author Joonas Vali July 2016
@@ -50,7 +49,7 @@ public class SimulationPlayer {
     return clock.getFrameIndex();
   }
 
-  public void passTime(int timeMs) {
+  public void passTime(long timeMs) {
     clock.passTime(timeMs);
   }
 

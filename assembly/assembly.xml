@@ -44,21 +44,6 @@
       </includes>
     </fileSet>
 
-    <fileSet>
-      <directory>${slick.native.lib}</directory>
-      <outputDirectory>sl-libs</outputDirectory>
-      <includes>
-        <include>**/*</include>
-      </includes>
-    </fileSet>
-
-    <fileSet>
-      <directory>${pdf.outputDirectory}</directory>
-      <outputDirectory>/</outputDirectory>
-      <includes>
-        <include>**/*.pdf</include>
-      </includes>
-    </fileSet>
   </fileSets>
 
   <files>

@@ -14,8 +14,9 @@ public class PhysicalImpl implements Physical {
   private final double xImpulse;
   private final double yImpulse;
   private final int diameter;
+  private final PhysicalUID uid;
 
-  public PhysicalImpl(double x, double y, int diameter, double rotation, double xImpulse, double yImpulse, double rotationImpulse) {
+  public PhysicalImpl(PhysicalUID uid, double x, double y, int diameter, double rotation, double xImpulse, double yImpulse, double rotationImpulse) {
     this.x = x;
     this.y = y;
     this.diameter = diameter;
@@ -23,6 +24,7 @@ public class PhysicalImpl implements Physical {
     this.rotationImpulse = rotationImpulse;
     this.xImpulse = xImpulse;
     this.yImpulse = yImpulse;
+    this.uid = uid;
   }
 
   public int getDiameter() {
@@ -61,6 +63,10 @@ public class PhysicalImpl implements Physical {
     return yImpulse;
   }
 
+  public PhysicalUID getUID() {
+    return uid;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -68,6 +74,7 @@ public class PhysicalImpl implements Physical {
 
     PhysicalImpl physical = (PhysicalImpl) o;
 
+    if (uid != physical.uid) return false;
     if (Double.compare(physical.x, x) != 0) return false;
     if (Double.compare(physical.y, y) != 0) return false;
     if (Double.compare(physical.rotation, rotation) != 0) return false;

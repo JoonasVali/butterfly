@@ -2,7 +2,7 @@ package ee.joonasvali.butterfly.config;
 
 import org.springframework.beans.factory.annotation.Value;
 
-import java.awt.Toolkit;
+import java.awt.*;
 
 public class ButterFlyConfig {
   public static final int REAL_SCREEN_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height;
@@ -20,8 +20,10 @@ public class ButterFlyConfig {
   private int actorVisionWidnessDegrees;
   @Value("${i.actor.vision.distance}")
   private int actorVisionDistance;
-  @Value("${i.simulation.size.multiplier}")
-  private int simulationSizeMultiplier;
+  @Value("${i.simulation.width}")
+  private int simulationWidth;
+  @Value("${i.simulation.height}")
+  private int simulationHeight;
   @Value("${i.actor.count}")
   private int actorsInSimulation;
   @Value("${i.actor.initialhealth}")
@@ -63,10 +65,6 @@ public class ButterFlyConfig {
     return actorVisionDistance;
   }
 
-  public int getSimulationSizeMultiplier() {
-    return simulationSizeMultiplier;
-  }
-
   public int getActorsInSimulation() {
     return actorsInSimulation;
   }
@@ -77,5 +75,13 @@ public class ButterFlyConfig {
 
   public int getFramesInSimulation() {
     return framesInSimulation;
+  }
+
+  public int getSimulationWidth() {
+    return simulationWidth;
+  }
+
+  public int getSimulationHeight() {
+    return simulationHeight;
   }
 }
