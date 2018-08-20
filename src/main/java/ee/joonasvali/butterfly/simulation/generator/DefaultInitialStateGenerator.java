@@ -30,9 +30,6 @@ public class DefaultInitialStateGenerator implements InitialStateGenerator {
     maxActorDiameter = config.getActorDiameter();
     foodDiameter = config.getFoodDiameter();
     nameGen = new NameGenerator(FIRST_NAMES, LAST_NAMES);
-    if (nameGen.getSize() < actorsInSimulation) {
-      throw new IllegalStateException("Name generator is able to provide less unique names than actors in simulation. Reduce the actor count.");
-    }
   }
 
   @Override
@@ -89,25 +86,42 @@ public class DefaultInitialStateGenerator implements InitialStateGenerator {
     );
   }
 
+  /**
+   * Simple infinite unique name generator.
+   *
+   * (infinite for current purposes.)
+   */
   private static class NameGenerator {
+    private String[] firstNames;
+    private String[] lastNames;
+    private int generation;
     private List<String> names = new ArrayList<>();
 
     NameGenerator(String[] firstNames, String[] lastNames) {
+      this.firstNames = firstNames;
+      this.lastNames = lastNames;
+      loadNextGeneration();
+    }
+
+    private void loadNextGeneration() {
+      generation++;
       for (String firstName : firstNames) {
         for (String lastName : lastNames) {
-          names.add(firstName + " " + lastName);
+          if (generation > 1) {
+            names.add(firstName + " " + lastName + " " + RomanNumber.toRoman(generation));
+          } else {
+            names.add(firstName + " " + lastName);
+          }
         }
       }
       Collections.shuffle(names);
     }
 
-    int getSize() {
-      return names.size();
-    }
-
     String next() {
+      if (names.isEmpty()) {
+        loadNextGeneration();
+      }
       return names.remove(names.size() - 1);
     }
   }
-
 }
